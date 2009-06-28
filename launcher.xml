@@ -1,0 +1,23 @@
+<project name="Euclid's Last Stand" default="run" basedir=".">
+    <property name="build" value="bin"/>
+    <property name="lib" value="lib"/>
+
+    <path id="base.class.path">
+        <pathelement path="${build}"/>
+        <fileset dir="${lib}" includes="*.jar"/>
+    </path>
+
+    <target name="run">
+        <launch classname="euclidstand.EuclidStand">
+            <classpath refid="base.class.path"/>
+            <jvmarg value="-Djava.library.path=lib/natives" />
+        </launch>
+    </target>
+
+    <target name="model">
+        <launch classname="com.jmex.model.util.ModelLoader">
+            <classpath refid="base.class.path"/>
+            <jvmarg value="-Djava.library.path=lib/natives" />
+        </launch>
+    </target>
+</project>

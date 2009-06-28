@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+<project name="EuclidsLastStand" default="build">
+	<property name="dir.src" value="src" />
+	<property name="dir.build" value="bin" />
+	<property name="dir.lib" value="lib" />
+	<property name="dir.debug" value="${dir.lib}/debug" />
+	<property name="lib" value="lib/jME_2.0.jar;lib/lwjgl.jar;lib/lwjgl_util.jar" />
+	<property name="main" value="euclidstand.EuclidStand" />
+	
+	<path id="classpath">
+		<pathelement location="." />
+		<pathelement location="${dir.build}" />
+		<fileset dir="${dir.lib}">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${dir.debug}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="init">
+		<mkdir dir="${dir.build}" />
+	</target>
+
+	<target name="clean">
+		<delete dir="${dir.build}" />
+	</target>
+
+	<target name="build" depends="init">
+		<javac srcdir="${dir.src}" destdir="${dir.build}">
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+	
+	<target name="run" depends="build">
+		<java fork="yes" spawn="no" classname="${main}">
+			<classpath refid="classpath" />
+			<jvmarg value="-Djava.library.path=lib/natives" />
+		</java>
+	</target>
+</project>
+
