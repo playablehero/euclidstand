@@ -9,17 +9,28 @@ import com.jme.renderer.ColorRGBA;
  * Text class encapsulating details for a line of text on the screen
  */
 public class Text2D {
+	private final Text textSpatial;
 	private String text = null;
-	private Text textSpatial = null;
 
 	/**
 	 * Constructor for Text2D
-	 * @param name of the text object
+	 * @param textSpatial text model
 	 * @param text to display
 	 */
-	public Text2D(String name, String text) {
-		textSpatial = Text.createDefaultTextLabel(name, text);
+	public Text2D(Text textSpatial, String text) {
+		this.textSpatial = textSpatial;
 		this.text = text;
+	}
+
+	/**
+	 * Factory method for Text2D
+	 * @param name of the text instance
+	 * @param text contents of the text instance
+	 * @return Text2D instance
+	 */
+	public static Text2D getText2D(String name, String text) {
+		Text textSpatial = Text.createDefaultTextLabel(name, text);
+		return new Text2D(textSpatial, text);
 	}
 
 	/**

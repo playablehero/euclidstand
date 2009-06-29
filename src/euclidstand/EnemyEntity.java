@@ -5,16 +5,17 @@ import com.jme.scene.Spatial;
 /**
  * Game object encapsulating baddie logic
  */
-public class BadGuy extends Entity {
+public class EnemyEntity extends Entity {
+
 	private Entity target = null;
 	private int damage = 0;
 
 	/**
-	 * Constructor for BadGuy
+	 * Constructor for Enemy
 	 * @param self Model representing the bad guy
 	 * @param target Entity that the bad guy should be trying to hit
 	 */
-	public BadGuy(Spatial self, Entity target) {
+	public EnemyEntity(Spatial self, Entity target) {
 		super(self);
 		setTarget(target);
 		setSpeed(15);
@@ -27,10 +28,11 @@ public class BadGuy extends Entity {
 	 */
 	@Override
 	public void update(float interpolation) {
-		Spatial self = getSelf();
-		self.getLocalTranslation().addLocal(self.getLocalRotation().
-				getRotationColumn(2).mult(interpolation * getSpeed()));
-		if (self.hasCollision(getTarget().getSelf(), false)) {
+		Spatial localSpatial = getSelf();
+		localSpatial.getLocalTranslation().addLocal(
+				localSpatial.getLocalRotation().getRotationColumn(2).
+				mult(interpolation * getSpeed()));
+		if (localSpatial.hasCollision(getTarget().getSelf(), false)) {
 			setRemove(true);
 			getTarget().hit(getDamage());
 			setChanged();

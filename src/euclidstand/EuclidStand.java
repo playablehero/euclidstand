@@ -5,37 +5,32 @@ import java.util.LinkedList;
 
 import com.jme.app.SimpleGame;
 import com.jme.math.Vector3f;
-import com.jme.scene.Spatial;
 import com.jme.scene.Node;
-import com.jme.util.Timer;
 import com.jme.input.ChaseCamera;
 import com.jme.input.KeyInput;
 import com.jme.input.KeyBindingManager;
-import com.jme.renderer.Camera;
-import com.jme.renderer.ColorRGBA;
 import com.jmex.terrain.TerrainBlock;
 
 import com.acarter.scenemonitor.SceneMonitor;
+import java.util.List;
 
-import jmetest.TestChooser;
 
 /**
  * Game class handling setup and game logic
  */
 public class EuclidStand extends SimpleGame {
-	private static final Logger logger = Logger.getLogger(EuclidStand.class
-			.getName());
 
+	private static final Logger logger =
+			Logger.getLogger(EuclidStand.class.getName());
+	private final List<Entity> entities;
+	private final List<Entity> entitiesToAdd;
+	private final List<EntityObserver> observers;
 	private Node sceneNode = null;
-	private Camera firstperson = null;
 	private ChaseCamera chasecam = null;
-	private LinkedList<Entity> entities = null;
 	private TerrainBlock terrain = null;
 	private Text2D angleText = null;
 	private Text2D velocityText = null;
 	private Text2D facingText = null;
-	private PlayerObserver playerObserver = null;
-	private EnemyObserver enemyObserver = null;
 	private boolean showDebug = false;
 
 	/**
@@ -43,6 +38,8 @@ public class EuclidStand extends SimpleGame {
 	 */
 	public EuclidStand() {
 		entities = new LinkedList<Entity>();
+		entitiesToAdd = new LinkedList<Entity>();
+		observers = new LinkedList<EntityObserver>();
 	}
 
 	/**
@@ -63,17 +60,24 @@ public class EuclidStand extends SimpleGame {
 		sceneNode = new Node("Game Scene");
 		rootNode.attachChild(sceneNode);
 
+		logger.info("Building world");
 		terrain = Factory.buildTerrain("Terrain", display.getRenderer());
 		sceneNode.attachChild(terrain);
 		sceneNode.attachChild(Factory.buildSky("Sky"));
 		//sceneNode.setLightCombineMode(Spatial.LightCombineMode.Off);
 
-		playerObserver = new PlayerObserver(entities, display.getRenderer());
-		playerObserver.initialise(sceneNode);
-		Player player = playerObserver.getPlayer();
+		logger.info("Building entities");
 
-		enemyObserver = new EnemyObserver(entities, display.getRenderer(), player);
-		enemyObserver.initialise(sceneNode);
+		PlayerObserver playerObserver = PlayerObserver.getObserver(
+				entitiesToAdd, display.getRenderer(), sceneNode);
+		PlayerEntity player = playerObserver.getPlayer();
+		observers.add(playerObserver);
+
+		EnemyObserver enemyObserver = EnemyObserver.getObserver(entitiesToAdd,
+				display.getRenderer(), player, sceneNode);
+		observers.add(enemyObserver);
+
+		logger.info("Initialising camera");
 
 		chasecam = new ChaseCamera(cam, player.getSelf());
 		chasecam.setEnableSpring(false);
@@ -81,18 +85,20 @@ public class EuclidStand extends SimpleGame {
 		chasecam.getMouseLook().setMouseYMultiplier(0.1f);
 		chasecam.getMouseLook().setRotateTarget(false);
 
-		angleText = new Text2D("Angle", "");
+		logger.info("Creating GUI");
+		angleText = Text2D.getText2D("Angle", "");
 		angleText.top(display.getRenderer(), 10);
 		sceneNode.attachChild(angleText.getSpatial());
-		velocityText = new Text2D("Velocity", "");
+		velocityText = Text2D.getText2D("Velocity", "");
 		velocityText.top(display.getRenderer(), 30);
 		sceneNode.attachChild(velocityText.getSpatial());
-		facingText = new Text2D("Facing", "");
+		facingText = Text2D.getText2D("Facing", "");
 		facingText.top(display.getRenderer(), 50);
 		sceneNode.attachChild(facingText.getSpatial());
 
-        KeyBindingManager.getKeyBindingManager().set( "toggle_debug", KeyInput.KEY_U );
+		KeyBindingManager.getKeyBindingManager().set("toggle_debug", KeyInput.KEY_U);
 		SceneMonitor.getMonitor().registerNode(rootNode, "Root Node");
+		logger.info("SceneMonitor is available");
 	}
 
 	/**
@@ -100,7 +106,11 @@ public class EuclidStand extends SimpleGame {
 	 */
 	@Override
 	protected void updateInput() {
-		playerObserver.updateInput(tpf);
+		for (EntityObserver o : observers) {
+			if (o instanceof PlayerObserver) {
+				((PlayerObserver)o).updateInput(tpf);
+			}
+		}
 	}
 
 	/**
@@ -118,41 +128,54 @@ public class EuclidStand extends SimpleGame {
 	protected void simpleUpdate() {
 		super.simpleUpdate();
 		SceneMonitor.getMonitor().updateViewer(tpf);
+
+		logger.fine("Updating camera");
 		float interpolation = tpf;
 		chasecam.update(interpolation);
+
+		logger.fine("Updating entities");
+		for (Entity e : entitiesToAdd) {
+			entities.add(e);
+		}
+		entitiesToAdd.clear();
 
 		LinkedList<Entity> entitiesToRemove = new LinkedList<Entity>();
 		for (Entity e : entities) {
 			e.updateTerrain(terrain);
 			e.update(interpolation);
-			if (e.isRemove())
+			if (e.isRemove()) {
 				entitiesToRemove.add(e);
+			}
 		}
 
-		for (Entity e : entitiesToRemove)
+		for (Entity e : entitiesToRemove) {
 			entities.remove(e);
+		}
 
+		logger.fine("Updating locations");
 		Vector3f camLoc = cam.getLocation();
 		float minCamHeight = terrain.getHeightFromWorld(camLoc) + 2;
-		if (camLoc.y  < minCamHeight) {
+		if (camLoc.y < minCamHeight) {
 			cam.getLocation().y = minCamHeight;
 			cam.update();
 		}
 
 		sceneNode.getChild("Sky").setLocalTranslation(cam.getLocation());
 
-		Player player = playerObserver.getPlayer();
+		logger.fine("Updating GUI");
+		PlayerEntity player = ((PlayerObserver)observers.get(0)).getPlayer();
 		angleText.setText("Angle: " + player.getFiringAngle());
 		velocityText.setText("Velocity: " + player.getVelocity());
 		facingText.setText("Facing: " + player.getFacing());
 
-        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
-                "toggle_debug", false)) {
+		if (KeyBindingManager.getKeyBindingManager().isValidCommand(
+				"toggle_debug", false)) {
+			logger.fine("Toggling SceneMonitor");
 			showDebug = !showDebug;
 			SceneMonitor.getMonitor().showViewer(showDebug);
-        }
+		}
 	}
-	
+
 	@Override
 	protected void simpleRender() {
 		super.simpleRender();
@@ -161,6 +184,7 @@ public class EuclidStand extends SimpleGame {
 
 	@Override
 	protected void cleanup() {
+		logger.info("Cleaning up");
 		super.cleanup();
 		SceneMonitor.getMonitor().cleanup();
 	}
@@ -172,5 +196,4 @@ public class EuclidStand extends SimpleGame {
 	public static void main(String[] args) {
 		new EuclidStand().start();
 	}
-
 }

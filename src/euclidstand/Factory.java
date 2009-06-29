@@ -23,12 +23,13 @@ import com.jme.renderer.Renderer;
 import com.jmex.terrain.util.MidPointHeightMap;
 import com.jmex.terrain.TerrainBlock;
 
+import java.net.URL;
 import jmetest.TestChooser;
 
 /**
  * Builder class which constructs model representations of ingame objects
  */
-public class Factory {
+public final class Factory {
 	private static final Logger logger = Logger.getLogger(Factory.class
 			.getName());
 
@@ -46,6 +47,7 @@ public class Factory {
 	 * @return the player model
 	 */
 	public static Spatial buildPlayer(String baseName, String barrelName, Renderer renderer) {
+		logger.fine("Building player");
 		Node node = null;
 		try {
 			File file = new File(mediaDir + "cannon-base.jme");
@@ -58,11 +60,16 @@ public class Factory {
 			Node barrelNode = (Node)BinaryImporter.getInstance().load(fileBarrel);
 			barrelNode.setName(barrelName);
 			node.attachChild(barrelNode);
+
 			GLSLShaderObjectsState testShader = renderer.createGLSLShaderObjectsState();
-			testShader.load(Factory.class.getClassLoader().getResource("shaders/sphereharm.vs"), 
-					Factory.class.getClassLoader().getResource("shaders/sphereharm.fs"));
+			ClassLoader cl = Factory.class.getClassLoader();
+			URL vertexShader = cl.getResource(shaderDir + "sphereharm.vs");
+			URL fragmentShader = cl.getResource(shaderDir + "sphereharm.fs");
+			testShader.load(vertexShader, fragmentShader);
+			// TODO: How to share shader objects across instances
 			//testShader.setEnabled(true);
 			//node.setRenderState(testShader);
+
 			node.updateRenderState();
 			node.updateModelBound();
 		} catch (IOException e) {
@@ -76,6 +83,7 @@ public class Factory {
 	 * @return the terrain model
 	 */
 	public static TerrainBlock buildTerrain(String name, Renderer renderer) {
+		logger.fine("Building terrain");
 		MidPointHeightMap map = new MidPointHeightMap(mapsize, 1f);
 		float offset = (mapsize * scale) / 2;
 		TerrainBlock terrain = new TerrainBlock(
@@ -99,6 +107,7 @@ public class Factory {
 	 * @return the sky model
 	 */
 	public static Spatial buildSky(String name) {
+		logger.fine("Building sky");
 		Skybox skybox = new Skybox(name, 500, 500, 500);
 		Texture north = TextureManager.loadTexture(
 			TestChooser.class.getClassLoader().getResource(
@@ -148,6 +157,7 @@ public class Factory {
 	 * @return the bad guy model
 	 */
 	public static Spatial buildBaddie(String name, Renderer renderer) {
+		logger.fine("Building baddie");
 		float size = mapsize * scale;
 		int side = random.nextInt(4);
 		float offset = random.nextFloat() * size - size/2;
@@ -191,6 +201,7 @@ public class Factory {
 	 * @return the shell model
 	 */
 	public static Spatial buildShell(String name, Renderer renderer, Spatial barrel) {
+		logger.fine("Building shell");
 		Vector3f translation = new Vector3f(barrel.getWorldTranslation());
 		Quaternion rotation = new Quaternion(barrel.getWorldRotation());
 		float[] angles = rotation.toAngles(null);

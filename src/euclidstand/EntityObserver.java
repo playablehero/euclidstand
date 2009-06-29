@@ -1,14 +1,17 @@
 package euclidstand;
 
-import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Observers track the state of entities, and take action when the state changes.
  */
 public abstract class EntityObserver {
-	protected LinkedList<Entity> entities = null;
+	protected List<Entity> entitiesToAdd = null;
 
-	public EntityObserver(LinkedList<Entity> entities) {
-		this.entities = entities;
+	/**
+	 * @param entitiesToAdd list of entities which will be added next frame
+	 */
+	public EntityObserver(List<Entity> entitiesToAdd) {
+		this.entitiesToAdd = entitiesToAdd;
 	}
 }

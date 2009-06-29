@@ -4,19 +4,31 @@ import com.jme.scene.Spatial;
 import com.jme.input.InputHandler;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
-import com.jme.input.action.InputActionEvent;
-import com.jme.input.action.KeyNodeLookUpAction;
-import com.jme.input.action.KeyNodeLookDownAction;
 import com.jme.input.action.KeyNodeRotateLeftAction;
 import com.jme.input.action.KeyNodeRotateRightAction;
 
 import euclidstand.action.AimUpAction;
 import euclidstand.action.AimDownAction;
 
-public class PlayerInputHandler extends InputHandler {
-	public PlayerInputHandler(Spatial base, Spatial barrel) {
-		setKeyBindings();
-		setActions(base, barrel);
+/**
+ * Handles player input keys
+ */
+public final class PlayerInputHandler extends InputHandler {
+
+	private PlayerInputHandler() {
+	}
+
+	/**
+	 * Factory method to create a handler
+	 * @param base
+	 * @param barrel
+	 * @return an instance of PlayerInputHandler
+	 */
+	public static PlayerInputHandler getHandler(Spatial base, Spatial barrel) {
+		PlayerInputHandler handler = new PlayerInputHandler();
+		handler.setKeyBindings();
+		handler.setActions(base, barrel);
+		return handler;
 	}
 
 	public boolean isShoot() {

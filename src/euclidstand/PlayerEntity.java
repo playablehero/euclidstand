@@ -1,32 +1,47 @@
 package euclidstand;
 
-import java.util.logging.Logger;
-
 import com.jme.scene.Spatial;
 import com.jmex.terrain.TerrainBlock;
 
 /**
  * Game object encapsulating player logic
  */
-public class Player extends Entity {
-	private static final Logger logger = Logger.getLogger(Player.class.getName());
-
-	public enum State {REST, CHARGING, FIRING, DEAD};
+public final class PlayerEntity extends Entity {
+	/**
+	 * Current state of the player
+	 */
+	public enum State {
+		/**
+		 * Player is not doing anything
+		 */
+		REST,
+		/**
+		 * Player is charging the cannon
+		 */
+		CHARGING,
+		/**
+		 * Player is firing the cannon
+		 */
+		FIRING,
+		/**
+		 * Player's dead.
+		 */
+		DEAD
+	};
 
 	private int score = 0;
 	private float angle = 0;
 	private float velocity = 0;
 	private float facing = 0;
-	private boolean charging = false;
-	private boolean fire = false;
 	private State state = null; // for cannon state
 	private Spatial barrel = null;
 
 	/**
 	 * Constructor for Player
 	 * @param self Model representing the player
+	 * @param barrel Model representing the cannon barrel
 	 */
-	public Player(Spatial self, Spatial barrel) {
+	public PlayerEntity(Spatial self, Spatial barrel) {
 		super(self);
 		setHealth(50);
 		setState(State.REST);

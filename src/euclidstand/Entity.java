@@ -12,10 +12,11 @@ import com.jmex.terrain.TerrainBlock;
  * and the positioning and movement of their spatials.
  */
 public class Entity extends Observable {
+	protected final Spatial self;
+
 	protected float speed = 0;
 	protected int health = 0;
 	protected boolean remove = false;
-	protected Spatial self = null;
 
 	/**
 	 * Constructor for Entity
@@ -26,7 +27,9 @@ public class Entity extends Observable {
 	}
 
 	/**
-	 * Updates entity logic every frame
+	 * Updates entity logic every frame.
+	 * Default implementation does nothing
+	 * @param interpolation current time per frame
 	 */
 	public void update(float interpolation) {
 	}

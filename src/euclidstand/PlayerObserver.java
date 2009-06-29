@@ -1,74 +1,116 @@
 package euclidstand;
 
+import java.util.List;
 import java.util.Observer;
 import java.util.Observable;
-import java.util.LinkedList;
 import java.util.logging.Logger;
 
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.renderer.Renderer;
 
-public class PlayerObserver extends EntityObserver implements Observer {
+/**
+ * Manages player objects and responds to player events
+ */
+public final class PlayerObserver extends EntityObserver implements Observer {
 	private static final Logger logger = Logger.getLogger(PlayerObserver.class.getName());
 
-	Renderer renderer = null;
-	Player player = null;
-	PlayerInputHandler input = null;
-	Node bulletNode = null;
-	Node playerNode = null;
-	int fired = 0;
+	private final Renderer renderer;
+	private final Node bulletNode;
+	private final Node playerNode;
+	private final PlayerEntity player;
+	private final PlayerInputHandler input;
+	private int fired = 0;
 
-	public PlayerObserver(LinkedList<Entity> entities, Renderer renderer) {
-		super(entities);
+	private PlayerObserver(List<Entity> entitiesToAdd,
+			Renderer renderer,
+			Node bulletNode,
+			Node playerNode,
+			PlayerEntity player,
+			PlayerInputHandler input) {
+		super(entitiesToAdd);
 		this.renderer = renderer;
-		bulletNode = new Node("Bullets");
-		playerNode = new Node("PlayerRelated");
+		this.bulletNode = bulletNode;
+		this.playerNode = playerNode;
+		this.player = player;
+		this.input = input;
 	}
 
-	public void initialise(Node sceneNode) {
+	/**
+	 * Factory method for creating PlayerObserver instances
+	 * @param entitiesToAdd list of entitiesToAdd
+	 * @param renderer current renderer
+	 * @param sceneNode for current scene
+	 * @return instance of PlayerObserver
+	 */
+	public static PlayerObserver getObserver(
+			List<Entity> entitiesToAdd,
+			Renderer renderer,
+			Node sceneNode) {
+		Node bulletNode = new Node("Bullets");
+		Node playerNode = new Node("PlayerRelated");
 		sceneNode.attachChild(playerNode);
 		playerNode.attachChild(bulletNode);
 		playerNode.attachChild(Factory.buildPlayer("Player", "Barrel", renderer));
 		Spatial playerSpatial = playerNode.getChild("Player");
 		Spatial barrelSpatial = playerNode.getChild("Barrel");
-		player = new Player(playerSpatial, barrelSpatial);
-		player.addObserver(this);
-		input = new PlayerInputHandler(playerSpatial, barrelSpatial);
-		entities.add(player);
+		PlayerInputHandler input = PlayerInputHandler.getHandler(playerSpatial, barrelSpatial);
+		PlayerEntity player = new PlayerEntity(playerSpatial, barrelSpatial);
+		PlayerObserver observer = new PlayerObserver(
+				entitiesToAdd, renderer, bulletNode, playerNode, player, input);
+		player.addObserver(observer);
+		entitiesToAdd.add(player);
+
+		return observer;
 	}
 
+	/**
+	 * Updates the input with current frame time
+	 * @param interpolation time per frame
+	 */
 	public void updateInput(float interpolation) {
 		input.update(interpolation);
 		player.charge(input.isShoot());
 	}
 
+	/**
+	 * Called whenever a player changes state
+	 * @param o player being observed
+	 * @param arg new player state
+	 */
 	public void update(Observable o, Object arg) {
 		logger.info("Player state change: " + arg);
-		Player.State state = (Player.State)arg;
-		Player player = (Player)o;
+		PlayerEntity.State state = (PlayerEntity.State)arg;
+		PlayerEntity localPlayer = (PlayerEntity)o;
 		switch (state) {
 			case FIRING:
 				fired += 1;
-				Spatial shellSpatial = Factory.buildShell("Shell"+fired, renderer, player.getBarrel());
-				Shell shell = new Shell(shellSpatial, player.getFiringAngle(), 
-						player.getVelocity(), player.getFacing());
+				Spatial shellSpatial = Factory.buildShell("Shell"+fired, renderer, localPlayer.getBarrel());
+				Shell shell = new Shell(shellSpatial, localPlayer.getFiringAngle(),
+						localPlayer.getVelocity(), localPlayer.getFacing());
 				bulletNode.attachChild(shellSpatial);
-				entities.add(shell);
+				entitiesToAdd.add(shell);
 				playerNode.updateRenderState();
 				break;
 			case DEAD:
 				// TODO: Show game over
-				playerNode.detachChild(player.getSelf());
+				playerNode.detachChild(localPlayer.getSelf());
+				// TODO: Apparently, enemies can still collide with dead player
 				break;
 		}
 	}
 
+	/**
+	 * @return instance of PlayerInputHandler
+	 */
 	public PlayerInputHandler getInput() {
 		return input;
 	}
 
-	public Player getPlayer() {
+	/**
+	 * @return instance of PlayerEntity
+	 */
+	public PlayerEntity getPlayer() {
 		return player;
 	}
 }
