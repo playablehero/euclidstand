@@ -9,6 +9,7 @@ import com.jme.renderer.ColorRGBA;
  * Text class encapsulating details for a line of text on the screen
  */
 public class Text2D {
+
 	private final Text textSpatial;
 	private String text = null;
 
@@ -17,7 +18,7 @@ public class Text2D {
 	 * @param textSpatial text model
 	 * @param text to display
 	 */
-	public Text2D(Text textSpatial, String text) {
+	private Text2D(Text textSpatial, String text) {
 		this.textSpatial = textSpatial;
 		this.text = text;
 	}
@@ -89,8 +90,9 @@ public class Text2D {
 	 * @param text to display
 	 */
 	public void setText(String text) {
-		if (text == null)
+		if (text == null) {
 			text = "";
+		}
 		this.text = text;
 		textSpatial.print(text);
 	}
