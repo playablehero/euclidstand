@@ -31,6 +31,10 @@ public final class PlayerInputHandler extends InputHandler {
 		return handler;
 	}
 
+	/**
+	 * Whether the shoot command is being held
+	 * @return true if held, false otherwise
+	 */
 	public boolean isShoot() {
 		return KeyBindingManager.getKeyBindingManager().isValidCommand("shoot", true);
 	}

@@ -9,15 +9,14 @@ import com.jme.scene.Node;
 import com.jme.renderer.Renderer;
 
 // TODO: Initialise bad guy attributes (appearance, speed, damage)
-
 /**
  * Initialises and observes the state of enemies in the game, creating new
  * ones when needed.
  */
 public final class EnemyObserver extends EntityObserver implements Observer {
-	private static final Logger logger = 
-			Logger.getLogger(EnemyObserver.class.getName());
 
+	private static final Logger logger =
+			Logger.getLogger(EnemyObserver.class.getName());
 	private final Renderer renderer;
 	private final Node enemyNode;
 	private Entity target = null;
@@ -50,7 +49,7 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 			Entity target,
 			Node sceneNode) {
 		Node enemyNode = new Node("Enemies");
-		EnemyObserver observer = 
+		EnemyObserver observer =
 				new EnemyObserver(entitiesToAdd, renderer, target, enemyNode);
 		sceneNode.attachChild(observer.enemyNode);
 		observer.createWave();
@@ -58,15 +57,16 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 	}
 
 	private void createWave() {
-		for (int i=0; i<50; i++)
+		for (int i = 0; i < 50; i++) {
 			createEnemy();
+		}
 	}
 
 	private void createEnemy() {
 		createdBaddies += 1;
-		String name = "Badguy"+createdBaddies;
+		String name = "Badguy" + createdBaddies;
 		EnemyEntity badguy = new EnemyEntity(Factory.buildBaddie(name, renderer), target);
-	
+
 		entitiesToAdd.add(badguy);
 		badguy.addObserver(this);
 		enemyNode.attachChild(badguy.getSelf());
@@ -76,10 +76,11 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 	public void update(Observable o, Object arg) {
 		logger.info("Enemy died");
 		currentBaddies -= 1;
-		Entity entity = (Entity)o;
+		Entity entity = (Entity) o;
 		enemyNode.detachChild(entity.getSelf());
 
-		if (currentBaddies == 0)
+		if (currentBaddies == 0) {
 			createWave();
+		}
 	}
 }

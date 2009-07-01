@@ -1,12 +1,17 @@
 package euclidstand;
 
-// Test to see if jME runs
-
 import com.jme.app.SimpleGame;
 
+/**
+ * Test to see if jME runs
+ */
 public class Test extends SimpleGame {
 
-    public static void main(String[] args) {
+	/**
+	 * Starts the test
+	 * @param args unused
+	 */
+	public static void main(String[] args) {
         new Test().start();
     }
 

@@ -12,10 +12,22 @@ import com.jmex.terrain.TerrainBlock;
  * and the positioning and movement of their spatials.
  */
 public class Entity extends Observable {
-	protected final Spatial self;
 
+	/**
+	 * Model representing this entity
+	 */
+	protected final Spatial self;
+	/**
+	 * Movement speed per frame
+	 */
 	protected float speed = 0;
+	/**
+	 * Health of this entity
+	 */
 	protected int health = 0;
+	/**
+	 * Indicates whether this entity will be removed next frame
+	 */
 	protected boolean remove = false;
 
 	/**
@@ -40,7 +52,7 @@ public class Entity extends Observable {
 	 */
 	public void updateTerrain(TerrainBlock terrain) {
 		float spatialY = terrain.getHeightFromWorld(self.getLocalTranslation()) +
-			((BoundingBox)self.getWorldBound()).yExtent;
+				((BoundingBox) self.getWorldBound()).yExtent;
 		self.getLocalTranslation().y = spatialY;
 	}
 
@@ -54,6 +66,8 @@ public class Entity extends Observable {
 
 	/**
 	 * Get the model representing the entity
+	 *
+	 * @return instance of Spatial
 	 */
 	public Spatial getSelf() {
 		return self;

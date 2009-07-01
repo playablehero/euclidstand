@@ -7,9 +7,24 @@ import com.jmex.terrain.TerrainBlock;
  * Defines a cannon shell
  */
 public class Shell extends Entity {
+
+	private float angle = 0;
+	private float velocity = 0;
+	private float facing = 0;
+
+	/**
+	 * Constructor for shell
+	 * @param self model representing the shell
+	 * @param angle of initial position
+	 * @param velocity of initial position
+	 * @param facing of initial position
+	 */
 	public Shell(Spatial self, float angle, float velocity, float facing) {
 		super(self);
 		setSpeed(30);
+		this.angle = angle;
+		this.velocity = velocity;
+		this.facing = facing;
 	}
 
 	/**
@@ -29,11 +44,11 @@ public class Shell extends Entity {
 	public void updateTerrain(TerrainBlock terrain) {
 		/*
 		float spatialY = terrain.getHeightFromWorld(self.getLocalTranslation()) +
-			((BoundingBox)self.getWorldBound()).yExtent;
+		((BoundingBox)self.getWorldBound()).yExtent;
 		if (spatialY < 0) {
-			setRemove(true);
-			setChanged();
-			notifyObservers();
+		setRemove(true);
+		setChanged();
+		notifyObservers();
 		}*/
 	}
 }

@@ -30,19 +30,18 @@ import jmetest.TestChooser;
  * Builder class which constructs model representations of ingame objects
  */
 public final class Factory {
-	private static final Logger logger = Logger.getLogger(Factory.class
-			.getName());
 
+	private static final Logger logger = Logger.getLogger(Factory.class.getName());
 	private static final String mediaDir = "media wip/";
 	private static final String shaderDir = "shaders/";
 	private static Random random = new Random();
-
 	// Terrain parameters
 	private static final int mapsize = 32;
 	private static final float scale = 20;
 
 	/**
-	 * @param name of model
+	 * @param baseName of base model
+	 * @param barrelName of barrel model
 	 * @param renderer for binding materials
 	 * @return the player model
 	 */
@@ -51,13 +50,13 @@ public final class Factory {
 		Node node = null;
 		try {
 			File file = new File(mediaDir + "cannon-base.jme");
-			node = (Node)BinaryImporter.getInstance().load(file);
+			node = (Node) BinaryImporter.getInstance().load(file);
 			node.setName(baseName);
 			node.setLocalScale(4f);
 			node.setModelBound(new BoundingBox());
 
 			File fileBarrel = new File(mediaDir + "cannon-barrel.jme");
-			Node barrelNode = (Node)BinaryImporter.getInstance().load(fileBarrel);
+			Node barrelNode = (Node) BinaryImporter.getInstance().load(fileBarrel);
 			barrelNode.setName(barrelName);
 			node.attachChild(barrelNode);
 
@@ -80,6 +79,7 @@ public final class Factory {
 
 	/**
 	 * @param name of model
+	 * @param renderer for binding materials
 	 * @return the terrain model
 	 */
 	public static TerrainBlock buildTerrain(String name, Renderer renderer) {
@@ -88,13 +88,12 @@ public final class Factory {
 		float offset = (mapsize * scale) / 2;
 		TerrainBlock terrain = new TerrainBlock(
 				name,
-				mapsize, new Vector3f(scale,0.1f,scale),
-				map.getHeightMap(), new Vector3f(-offset,0,-offset)
-				);
+				mapsize, new Vector3f(scale, 0.1f, scale),
+				map.getHeightMap(), new Vector3f(-offset, 0, -offset));
 		terrain.setModelBound(new BoundingBox());
 		terrain.updateModelBound();
 		GLSLShaderObjectsState testShader = renderer.createGLSLShaderObjectsState();
-		testShader.load(Factory.class.getClassLoader().getResource("shaders/sphereharm.vs"), 
+		testShader.load(Factory.class.getClassLoader().getResource("shaders/sphereharm.vs"),
 				Factory.class.getClassLoader().getResource("shaders/sphereharm.fs"));
 		//testShader.setEnabled(true);
 		//terrain.setRenderState(testShader);
@@ -110,36 +109,36 @@ public final class Factory {
 		logger.fine("Building sky");
 		Skybox skybox = new Skybox(name, 500, 500, 500);
 		Texture north = TextureManager.loadTexture(
-			TestChooser.class.getClassLoader().getResource(
-			"jmetest/data/texture/north.jpg"),
-			Texture.MinificationFilter.BilinearNearestMipMap,
-			Texture.MagnificationFilter.Bilinear);
+				TestChooser.class.getClassLoader().getResource(
+				"jmetest/data/texture/north.jpg"),
+				Texture.MinificationFilter.BilinearNearestMipMap,
+				Texture.MagnificationFilter.Bilinear);
 		Texture south = TextureManager.loadTexture(
-			TestChooser.class.getClassLoader().getResource(
-			"jmetest/data/texture/south.jpg"),
-			Texture.MinificationFilter.BilinearNearestMipMap,
-			Texture.MagnificationFilter.Bilinear);
+				TestChooser.class.getClassLoader().getResource(
+				"jmetest/data/texture/south.jpg"),
+				Texture.MinificationFilter.BilinearNearestMipMap,
+				Texture.MagnificationFilter.Bilinear);
 		Texture east = TextureManager.loadTexture(
-			TestChooser.class.getClassLoader().getResource(
-			"jmetest/data/texture/east.jpg"),
-			Texture.MinificationFilter.BilinearNearestMipMap,
-			Texture.MagnificationFilter.Bilinear);
+				TestChooser.class.getClassLoader().getResource(
+				"jmetest/data/texture/east.jpg"),
+				Texture.MinificationFilter.BilinearNearestMipMap,
+				Texture.MagnificationFilter.Bilinear);
 		Texture west = TextureManager.loadTexture(
-			TestChooser.class.getClassLoader().getResource(
-			"jmetest/data/texture/west.jpg"),
-			Texture.MinificationFilter.BilinearNearestMipMap,
-			Texture.MagnificationFilter.Bilinear);
+				TestChooser.class.getClassLoader().getResource(
+				"jmetest/data/texture/west.jpg"),
+				Texture.MinificationFilter.BilinearNearestMipMap,
+				Texture.MagnificationFilter.Bilinear);
 		Texture up = TextureManager.loadTexture(
-			TestChooser.class.getClassLoader().getResource(
-			"jmetest/data/texture/top.jpg"),
-			Texture.MinificationFilter.BilinearNearestMipMap,
-			Texture.MagnificationFilter.Bilinear);
+				TestChooser.class.getClassLoader().getResource(
+				"jmetest/data/texture/top.jpg"),
+				Texture.MinificationFilter.BilinearNearestMipMap,
+				Texture.MagnificationFilter.Bilinear);
 		Texture down = TextureManager.loadTexture(
-			TestChooser.class.getClassLoader().getResource(
-			"jmetest/data/texture/bottom.jpg"),
-			Texture.MinificationFilter.BilinearNearestMipMap,
-			Texture.MagnificationFilter.Bilinear);
- 
+				TestChooser.class.getClassLoader().getResource(
+				"jmetest/data/texture/bottom.jpg"),
+				Texture.MinificationFilter.BilinearNearestMipMap,
+				Texture.MagnificationFilter.Bilinear);
+
 		skybox.setTexture(Skybox.Face.North, north);
 		skybox.setTexture(Skybox.Face.West, west);
 		skybox.setTexture(Skybox.Face.South, south);
@@ -160,24 +159,24 @@ public final class Factory {
 		logger.fine("Building baddie");
 		float size = mapsize * scale;
 		int side = random.nextInt(4);
-		float offset = random.nextFloat() * size - size/2;
+		float offset = random.nextFloat() * size - size / 2;
 		Vector3f location = null;
-		switch(side) {
+		switch (side) {
 			case 0: // north
-				location = new Vector3f(offset, 0, size/2 - 5);
+				location = new Vector3f(offset, 0, size / 2 - 5);
 				break;
 			case 1: // south
-				location = new Vector3f(offset, 0, -size/2 + 5);
+				location = new Vector3f(offset, 0, -size / 2 + 5);
 				break;
 			case 2: // east
-				location = new Vector3f(-size/2 + 5, 0, offset);
+				location = new Vector3f(-size / 2 + 5, 0, offset);
 				break;
 			case 3: // west
-				location = new Vector3f(size/2 - 5, 0, offset);
+				location = new Vector3f(size / 2 - 5, 0, offset);
 				break;
 		}
 
-		Box box = new Box(name, new Vector3f(0,0,0), 1, 1, 2);
+		Box box = new Box(name, new Vector3f(0, 0, 0), 1, 1, 2);
 		box.setLocalTranslation(location);
 		box.setRandomColors();
 		box.setModelBound(new BoundingBox());
@@ -186,18 +185,19 @@ public final class Factory {
 		ms.setDiffuse(ColorRGBA.red);
 		box.setRenderState(ms);
 		GLSLShaderObjectsState testShader = renderer.createGLSLShaderObjectsState();
-		testShader.load(Factory.class.getClassLoader().getResource("shaders/sphereharm.vs"), 
+		testShader.load(Factory.class.getClassLoader().getResource("shaders/sphereharm.vs"),
 				Factory.class.getClassLoader().getResource("shaders/sphereharm.fs"));
 		//testShader.setEnabled(true);
 		//box.setRenderState(testShader);
 		box.updateRenderState();
-		box.lookAt(new Vector3f(0,0,0), new Vector3f(0,1,0));
+		box.lookAt(new Vector3f(0, 0, 0), new Vector3f(0, 1, 0));
 		return box;
 	}
 
 	/**
 	 * @param name of model
 	 * @param renderer for binding materials
+	 * @param barrel model which forms starting coordinates for the shell
 	 * @return the shell model
 	 */
 	public static Spatial buildShell(String name, Renderer renderer, Spatial barrel) {
@@ -217,7 +217,7 @@ public final class Factory {
 		ms.setDiffuse(ColorRGBA.red);
 		cylinder.setRenderState(ms);*/
 		GLSLShaderObjectsState testShader = renderer.createGLSLShaderObjectsState();
-		testShader.load(Factory.class.getClassLoader().getResource("shaders/sphereharm.vs"), 
+		testShader.load(Factory.class.getClassLoader().getResource("shaders/sphereharm.vs"),
 				Factory.class.getClassLoader().getResource("shaders/sphereharm.fs"));
 		//testShader.setEnabled(true);
 		//cylinder.setRenderState(testShader);
