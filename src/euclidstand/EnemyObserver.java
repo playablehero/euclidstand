@@ -70,6 +70,7 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 		entitiesToAdd.add(badguy);
 		badguy.addObserver(this);
 		enemyNode.attachChild(badguy.getSelf());
+		enemyNode.updateRenderState();
 		currentBaddies += 1;
 	}
 
