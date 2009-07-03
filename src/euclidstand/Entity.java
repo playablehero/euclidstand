@@ -57,6 +57,24 @@ public class Entity extends Observable {
 	}
 
 	/**
+	 * Moves the entity forward, defined by current speed
+	 * @param interpolation time variable
+	 */
+	public void moveForward(float interpolation) {
+		self.getLocalTranslation().addLocal(self.getLocalRotation().
+				getRotationColumn(2).mult(interpolation * getSpeed()));
+	}
+
+	/**
+	 * Tests for collision with another entity
+	 * @param other entity to test with
+	 * @return true if collided, false otherwise
+	 */
+	public boolean hasCollision(Entity other) {
+		return self.hasCollision(other.getSelf(), false);
+	}
+
+	/**
 	 * Do a set amount of damage to this entity
 	 * @param damage amount of damage
 	 */

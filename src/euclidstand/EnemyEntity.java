@@ -28,11 +28,8 @@ public class EnemyEntity extends Entity {
 	 */
 	@Override
 	public void update(float interpolation) {
-		Spatial localSpatial = getSelf();
-		localSpatial.getLocalTranslation().addLocal(
-				localSpatial.getLocalRotation().getRotationColumn(2).
-				mult(interpolation * getSpeed()));
-		if (localSpatial.hasCollision(getTarget().getSelf(), false)) {
+		moveForward(interpolation);
+		if (!getTarget().isRemove() && hasCollision(getTarget())) {
 			setRemove(true);
 			getTarget().hit(getDamage());
 			setChanged();

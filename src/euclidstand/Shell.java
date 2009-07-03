@@ -29,12 +29,12 @@ public class Shell extends Entity {
 
 	/**
 	 * Updates shell movement
+	 * @param interpolation time variable
 	 */
 	@Override
 	public void update(float interpolation) {
-		Spatial localSpatial = getSelf();
-		localSpatial.getLocalTranslation().addLocal(localSpatial.getLocalRotation().
-				getRotationColumn(2).mult(interpolation * getSpeed()));
+		// TODO: Replace with proper trajectory
+		moveForward(interpolation);
 	}
 
 	/**
