@@ -49,8 +49,8 @@ public final class PlayerInputHandler extends InputHandler {
 	}
 
 	private void setActions(Spatial base, Spatial barrel) {
-		addAction(new AimUpAction(barrel, 1f, -0.33009472f), "aimUp", true);
-		addAction(new AimDownAction(barrel, 1f, 0.1352511f), "aimDown", true);
+		addAction(new AimUpAction(barrel, 1f, Constants.UP_INPUT_MAXIMUM), "aimUp", true);
+		addAction(new AimDownAction(barrel, 1f, Constants.DOWN_INPUT_MAXIMUM), "aimDown", true);
 		addAction(new KeyNodeRotateLeftAction(base, 1f), "aimLeft", true);
 		addAction(new KeyNodeRotateRightAction(base, 1f), "aimRight", true);
 	}

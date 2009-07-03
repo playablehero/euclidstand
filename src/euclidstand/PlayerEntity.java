@@ -90,7 +90,7 @@ public final class PlayerEntity extends Entity {
 		if (charging) {
 			if (state == State.REST)
 				setState(State.CHARGING);
-			velocity += 5;
+			velocity += Constants.VELOCITY_INCREMENT;
 		}
 		if (!charging && state == State.CHARGING)
 			setState(State.FIRING);
@@ -107,8 +107,13 @@ public final class PlayerEntity extends Entity {
 	 * @return the firing angle of the player
 	 */
 	public float getFiringAngle() {
-		float[] angles = barrel.getLocalRotation().toAngles(null);
-		return angles[0];
+		// invert the angle
+		float firingAngle = -barrel.getLocalRotation().toAngles(null)[0];
+		float angle_range = Constants.UP_ANGLE_MAXIMUM - Constants.DOWN_ANGLE_MAXIMUM;
+		// assume that UP_INPUT is negative, and DOWN_INPUT is positive
+		float input_range = Math.abs(Constants.UP_INPUT_MAXIMUM) + Constants.DOWN_INPUT_MAXIMUM;
+		float scale = angle_range / input_range;
+		return firingAngle * scale + Constants.DOWN_ANGLE_MAXIMUM;
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package euclidstand;
 
+import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 import com.jmex.terrain.TerrainBlock;
 
@@ -8,9 +9,7 @@ import com.jmex.terrain.TerrainBlock;
  */
 public class Shell extends Entity {
 
-	private float angle = 0;
-	private float velocity = 0;
-	private float facing = 0;
+	private float verticalVelocity;
 
 	/**
 	 * Constructor for shell
@@ -19,12 +18,15 @@ public class Shell extends Entity {
 	 * @param velocity of initial position
 	 * @param facing of initial position
 	 */
-	public Shell(Spatial self, float angle, float velocity, float facing) {
+	public Shell(Spatial self, float velocity, float verticalVelocity) {
 		super(self);
-		setSpeed(30);
-		this.angle = angle;
-		this.velocity = velocity;
-		this.facing = facing;
+		setSpeed(velocity);
+		this.verticalVelocity = verticalVelocity;
+	}
+	
+	public static Shell getShell(Spatial self, float angle, float velocity) {
+		float verticalVelocity = (float)Math.sin(angle) * velocity * Constants.VERTICAL_SCALE;
+		return new Shell(self, velocity, verticalVelocity);
 	}
 
 	/**
@@ -33,8 +35,10 @@ public class Shell extends Entity {
 	 */
 	@Override
 	public void update(float interpolation) {
-		// TODO: Replace with proper trajectory
 		moveForward(interpolation);
+		verticalVelocity += Constants.VERTICAL_INCREMENT * interpolation;
+		Vector3f v = new Vector3f(0,-verticalVelocity,0);
+		self.getLocalTranslation().addLocal(v);
 	}
 
 	/**

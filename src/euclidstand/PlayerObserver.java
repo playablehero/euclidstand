@@ -86,8 +86,8 @@ public final class PlayerObserver extends EntityObserver implements Observer {
 			case FIRING:
 				fired += 1;
 				Spatial shellSpatial = Factory.buildShell("Shell"+fired, renderer, localPlayer.getBarrel());
-				Shell shell = new Shell(shellSpatial, localPlayer.getFiringAngle(),
-						localPlayer.getVelocity(), localPlayer.getFacing());
+				Shell shell = Shell.getShell(shellSpatial, 
+						localPlayer.getFiringAngle(), localPlayer.getVelocity());
 				bulletNode.attachChild(shellSpatial);
 				entitiesToAdd.add(shell);
 				playerNode.updateRenderState();
