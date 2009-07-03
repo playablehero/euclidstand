@@ -68,6 +68,13 @@ public class Entity extends Observable {
 	}
 
 	/**
+	 * @return entity name
+	 */
+	public String getName() {
+		return self.getName();
+	}
+
+	/**
 	 * Removes this entity from the scene
 	 */
 	public void remove() {
@@ -88,6 +95,7 @@ public class Entity extends Observable {
 	 * @param damage amount of damage
 	 */
 	public void hit(int damage) {
+		System.out.println(getName() + " has been hit for " + damage + " damage");
 		health -= damage;
 	}
 

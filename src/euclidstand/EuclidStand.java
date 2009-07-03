@@ -12,6 +12,7 @@ import com.jme.input.KeyBindingManager;
 import com.jmex.terrain.TerrainBlock;
 
 import com.acarter.scenemonitor.SceneMonitor;
+import com.jme.bounding.BoundingBox;
 import java.util.List;
 
 
@@ -68,8 +69,9 @@ public class EuclidStand extends SimpleGame {
 
 		logger.info("Building entities");
 
-		ShellObserver shellObserver = ShellObserver.getObserver(entitiesToAdd, 
-				display.getRenderer(), rootNode);
+		ShellCollision shellCollision = new ShellCollision(entities);
+		ShellObserver shellObserver = new ShellObserver(entitiesToAdd,
+				shellCollision, display.getRenderer(), sceneNode);
 		observers.add(shellObserver);
 		PlayerObserver playerObserver = PlayerObserver.getObserver(
 				entitiesToAdd, display.getRenderer(), sceneNode, shellObserver);

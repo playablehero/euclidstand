@@ -1,7 +1,9 @@
 package euclidstand;
 
+import com.jme.bounding.BoundingSphere;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
+import com.jme.scene.shape.Sphere;
 import com.jmex.effects.particles.ParticleMesh;
 import java.util.List;
 import java.util.Observable;
@@ -12,20 +14,16 @@ import java.util.Observer;
  */
 public class ShellObserver extends EntityObserver implements Observer {
 
-	private final Node explosionNode;
+	private final Node searchNode;
 	private final Renderer renderer;
+	private final ShellCollision shellCollision;
 
-	private ShellObserver(List<Entity> entitiesToAdd, Renderer renderer, Node explosionNode) {
+	public ShellObserver(List<Entity> entitiesToAdd, ShellCollision shellCollision,
+			Renderer renderer, Node searchNode) {
 		super(entitiesToAdd);
+		this.shellCollision = shellCollision;
 		this.renderer = renderer;
-		this.explosionNode = explosionNode;
-	}
-
-	public static ShellObserver getObserver(
-			List<Entity> entitiesToAdd,
-			Renderer renderer,
-			Node explosionNode) {
-		return new ShellObserver(entitiesToAdd, renderer, explosionNode);
+		this.searchNode = searchNode;
 	}
 
 	/**
@@ -37,9 +35,14 @@ public class ShellObserver extends EntityObserver implements Observer {
 	public void update(Observable o, Object arg) {
 		ShellEntity shell = (ShellEntity) o;
 		ParticleMesh explosion = Factory.buildSmallExplosion("ShellExplosion", renderer, shell.getSelf());
-		explosionNode.attachChild(explosion);
-		explosionNode.updateRenderState();
+
+		// Find enemies and hurt them
+		float explosionRadius = 10f;
+		Sphere sphere = new Sphere(null, shell.getSelf().getWorldTranslation(), 5, 5, explosionRadius);
+		sphere.setModelBound(new BoundingSphere());
+		sphere.updateModelBound();
+		sphere.calculateCollisions(searchNode, shellCollision);
+		shell.setExplosion(explosion);
 		explosion.forceRespawn();
-		// TODO: Find enemies and hurt them
 	}
 }

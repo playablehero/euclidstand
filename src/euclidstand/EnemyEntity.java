@@ -20,6 +20,7 @@ public class EnemyEntity extends Entity {
 		setTarget(target);
 		setSpeed(15);
 		setDamage(1);
+		setHealth(1);
 	}
 
 	/**
@@ -30,11 +31,17 @@ public class EnemyEntity extends Entity {
 	public void update(float interpolation) {
 		moveForward(interpolation);
 		if (!getTarget().isRemove() && hasCollision(getTarget())) {
-			setRemove(true);
 			getTarget().hit(getDamage());
-			setChanged();
-			notifyObservers();
+			die();
 		}
+		if (getHealth() < 0)
+			die();
+	}
+
+	private void die() {
+		setRemove(true);
+		setChanged();
+		notifyObservers();
 	}
 
 	/**

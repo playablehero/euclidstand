@@ -40,7 +40,7 @@ public final class PlayerEntity extends Entity {
 	 */
 	public PlayerEntity(Spatial self, Spatial barrel) {
 		super(self);
-		setHealth(1);
+		setHealth(50);
 		setState(State.REST);
 		this.barrel = barrel;
 	}

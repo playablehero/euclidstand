@@ -31,6 +31,15 @@ public class ShellEntity extends Entity {
 	}
 
 	/**
+	 * Attaches an explosion to the location of this shell
+	 * @param explosion model
+	 */
+	public void setExplosion(Spatial explosion) {
+		getSelf().getParent().attachChild(explosion);
+		getSelf().getParent().updateRenderState();
+	}
+
+	/**
 	 * Updates shell movement
 	 * @param interpolation time variable
 	 */

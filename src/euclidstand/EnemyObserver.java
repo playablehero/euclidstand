@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import com.jme.scene.Node;
 import com.jme.renderer.Renderer;
+import com.jmex.effects.particles.ParticleMesh;
 
 // TODO: Initialise bad guy attributes (appearance, speed, damage)
 /**
@@ -57,7 +58,7 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 	}
 
 	private void createWave() {
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < 10; i++) {
 			createEnemy();
 		}
 	}
@@ -76,6 +77,12 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 
 	public void update(Observable o, Object arg) {
 		logger.info("Enemy died");
+		EnemyEntity badguy = (EnemyEntity) o;
+		ParticleMesh explosion = Factory.buildSmallExplosion(
+				badguy.getName() + "Death", renderer, badguy.getSelf());
+		enemyNode.attachChild(explosion);
+		enemyNode.updateRenderState();
+		explosion.forceRespawn();
 		currentBaddies -= 1;
 		if (currentBaddies == 0) {
 			createWave();
