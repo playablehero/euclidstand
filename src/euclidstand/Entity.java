@@ -51,9 +51,11 @@ public class Entity extends Observable {
 	 * @param terrain to use for checking
 	 */
 	public void updateTerrain(TerrainBlock terrain) {
-		float spatialY = terrain.getHeightFromWorld(self.getLocalTranslation()) +
-				((BoundingBox) self.getWorldBound()).yExtent;
-		self.getLocalTranslation().y = spatialY;
+		if (self.getWorldBound() instanceof BoundingBox) {
+			float spatialY = terrain.getHeightFromWorld(self.getLocalTranslation()) +
+					((BoundingBox) self.getWorldBound()).yExtent;
+			self.getLocalTranslation().y = spatialY;
+		}
 	}
 
 	/**
