@@ -1,5 +1,6 @@
 package euclidstand;
 
+import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 import com.jmex.terrain.TerrainBlock;
@@ -46,13 +47,14 @@ public class Shell extends Entity {
 	 */
 	@Override
 	public void updateTerrain(TerrainBlock terrain) {
-		/*
-		float spatialY = terrain.getHeightFromWorld(self.getLocalTranslation()) +
-		((BoundingBox)self.getWorldBound()).yExtent;
-		if (spatialY < 0) {
-		setRemove(true);
-		setChanged();
-		notifyObservers();
-		}*/
+		Spatial self = getSelf();
+		float height = terrain.getHeightFromWorld(self.getLocalTranslation());
+		float spatialY = ((BoundingSphere)self.getWorldBound()).getRadius() +
+				self.getLocalTranslation().getY() - height;
+		if (spatialY < Constants.SHELL_COLLISION_THRESHOLD) {
+			setRemove(true);
+			setChanged();
+			notifyObservers();
+		}
 	}
 }
