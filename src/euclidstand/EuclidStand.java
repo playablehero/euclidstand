@@ -68,8 +68,11 @@ public class EuclidStand extends SimpleGame {
 
 		logger.info("Building entities");
 
+		ShellObserver shellObserver = ShellObserver.getObserver(entitiesToAdd, 
+				display.getRenderer(), rootNode);
+		observers.add(shellObserver);
 		PlayerObserver playerObserver = PlayerObserver.getObserver(
-				entitiesToAdd, display.getRenderer(), sceneNode);
+				entitiesToAdd, display.getRenderer(), sceneNode, shellObserver);
 		PlayerEntity player = playerObserver.getPlayer();
 		observers.add(playerObserver);
 
@@ -106,11 +109,7 @@ public class EuclidStand extends SimpleGame {
 	 */
 	@Override
 	protected void updateInput() {
-		for (EntityObserver o : observers) {
-			if (o instanceof PlayerObserver) {
-				((PlayerObserver)o).updateInput(tpf);
-			}
-		}
+		getPlayerObserver().updateInput(tpf);
 	}
 
 	/**
@@ -164,7 +163,7 @@ public class EuclidStand extends SimpleGame {
 		sceneNode.getChild("Sky").setLocalTranslation(cam.getLocation());
 
 		logger.fine("Updating GUI");
-		PlayerEntity player = ((PlayerObserver)observers.get(0)).getPlayer();
+		PlayerEntity player = getPlayerObserver().getPlayer();
 		angleText.setText("Angle: " + player.getFiringAngle());
 		velocityText.setText("Velocity: " + player.getVelocity());
 		facingText.setText("Facing: " + player.getFacing());
@@ -188,6 +187,15 @@ public class EuclidStand extends SimpleGame {
 		logger.info("Cleaning up");
 		super.cleanup();
 		SceneMonitor.getMonitor().cleanup();
+	}
+
+	private PlayerObserver getPlayerObserver() {
+		for (EntityObserver o : observers) {
+			if (o instanceof PlayerObserver) {
+				return (PlayerObserver)o;
+			}
+		}
+		return null;
 	}
 
 	/**

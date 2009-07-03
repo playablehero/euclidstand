@@ -1,7 +1,9 @@
 package euclidstand;
 
+import com.jmex.effects.particles.ParticleSystem;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Random;
 
@@ -21,6 +23,8 @@ import com.jme.util.export.binary.BinaryImporter;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.shape.Sphere;
+import com.jmex.effects.particles.ParticleControllerListener;
+import com.jmex.effects.particles.ParticleMesh;
 import com.jmex.terrain.util.MidPointHeightMap;
 import com.jmex.terrain.TerrainBlock;
 
@@ -221,5 +225,39 @@ public final class Factory {
 				Factory.class.getClassLoader().getResource("shaders/sphereharm.fs"));
 		//testShader.setEnabled(true);
 		return sphere;
+	}
+
+	public static ParticleMesh buildBigExplosion(String name, Renderer renderer, Spatial victim) {
+		logger.fine("Building big explosion");
+		ParticleMesh mesh = buildExplosion(name, victim, "explosion.jme");
+		return mesh;
+	}
+
+	public static ParticleMesh buildSmallExplosion(String name, Renderer renderer, Spatial victim) {
+		logger.fine("Building small explosion");
+		ParticleMesh mesh = buildExplosion(name, victim, "fast-explosion.jme");
+		mesh.setLocalScale(.1f);
+		return mesh;
+	}
+
+	private static ParticleMesh buildExplosion(String name, Spatial victim, String filename) {
+		File file = new File(mediaDir + filename);
+		ParticleMesh mesh = null;
+		try {
+			mesh = (ParticleMesh) BinaryImporter.getInstance().load(file);
+			mesh.setName(name);
+			mesh.setLocalTranslation(victim.getWorldTranslation());
+			mesh.setModelBound(new BoundingBox());
+			mesh.getParticleController().addListener(new ParticleControllerListener() {
+
+				public void onDead(ParticleSystem particles) {
+					particles.removeFromParent();
+				}
+			});
+		} catch (IOException ex) {
+			Logger.getLogger(Factory.class.getName()).log(Level.SEVERE, null, ex);
+		}
+
+		return mesh;
 	}
 }

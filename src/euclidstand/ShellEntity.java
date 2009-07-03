@@ -8,7 +8,7 @@ import com.jmex.terrain.TerrainBlock;
 /**
  * Defines a cannon shell
  */
-public class Shell extends Entity {
+public class ShellEntity extends Entity {
 
 	private float verticalVelocity;
 
@@ -19,15 +19,15 @@ public class Shell extends Entity {
 	 * @param velocity of initial position
 	 * @param facing of initial position
 	 */
-	public Shell(Spatial self, float velocity, float verticalVelocity) {
+	private ShellEntity(Spatial self, float velocity, float verticalVelocity) {
 		super(self);
 		setSpeed(velocity);
 		this.verticalVelocity = verticalVelocity;
 	}
 
-	public static Shell getShell(Spatial self, float angle, float velocity) {
+	public static ShellEntity getShell(Spatial self, float angle, float velocity) {
 		float verticalVelocity = (float) Math.sin(angle) * velocity * Constants.VERTICAL_SCALE;
-		return new Shell(self, velocity, verticalVelocity);
+		return new ShellEntity(self, velocity, verticalVelocity);
 	}
 
 	/**
