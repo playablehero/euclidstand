@@ -149,6 +149,7 @@ public class EuclidStand extends SimpleGame {
 		}
 
 		for (Entity e : entitiesToRemove) {
+			e.remove();
 			entities.remove(e);
 		}
 

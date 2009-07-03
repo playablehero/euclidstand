@@ -77,9 +77,6 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 	public void update(Observable o, Object arg) {
 		logger.info("Enemy died");
 		currentBaddies -= 1;
-		Entity entity = (Entity) o;
-		enemyNode.detachChild(entity.getSelf());
-
 		if (currentBaddies == 0) {
 			createWave();
 		}

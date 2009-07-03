@@ -94,7 +94,6 @@ public final class PlayerObserver extends EntityObserver implements Observer {
 				break;
 			case DEAD:
 				// TODO: Show game over
-				playerNode.detachChild(localPlayer.getSelf());
 				// TODO: Apparently, enemies can still collide with dead player
 				break;
 		}

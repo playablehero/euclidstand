@@ -66,6 +66,13 @@ public class Entity extends Observable {
 	}
 
 	/**
+	 * Removes this entity from the scene
+	 */
+	public void remove() {
+		self.removeFromParent();
+	}
+
+	/**
 	 * Tests for collision with another entity
 	 * @param other entity to test with
 	 * @return true if collided, false otherwise
