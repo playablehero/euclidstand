@@ -16,19 +16,19 @@ public class Entity extends Observable {
 	/**
 	 * Model representing this entity
 	 */
-	protected final Spatial self;
+	private final Spatial self;
 	/**
 	 * Movement speed per frame
 	 */
-	protected float speed = 0;
+	private float speed = 0;
 	/**
 	 * Health of this entity
 	 */
-	protected int health = 0;
+	private int health = 0;
 	/**
 	 * Indicates whether this entity will be removed next frame
 	 */
-	protected boolean remove = false;
+	private boolean remove = false;
 
 	/**
 	 * Constructor for Entity

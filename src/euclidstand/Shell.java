@@ -23,9 +23,9 @@ public class Shell extends Entity {
 		setSpeed(velocity);
 		this.verticalVelocity = verticalVelocity;
 	}
-	
+
 	public static Shell getShell(Spatial self, float angle, float velocity) {
-		float verticalVelocity = (float)Math.sin(angle) * velocity * Constants.VERTICAL_SCALE;
+		float verticalVelocity = (float) Math.sin(angle) * velocity * Constants.VERTICAL_SCALE;
 		return new Shell(self, velocity, verticalVelocity);
 	}
 
@@ -37,8 +37,8 @@ public class Shell extends Entity {
 	public void update(float interpolation) {
 		moveForward(interpolation);
 		verticalVelocity += Constants.VERTICAL_INCREMENT * interpolation;
-		Vector3f v = new Vector3f(0,-verticalVelocity,0);
-		self.getLocalTranslation().addLocal(v);
+		Vector3f v = new Vector3f(0, -verticalVelocity, 0);
+		getSelf().getLocalTranslation().addLocal(v);
 	}
 
 	/**
