@@ -6,13 +6,13 @@ import java.util.logging.Logger;
 import java.util.Random;
 
 import com.jme.bounding.BoundingBox;
+import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
 import com.jme.math.Quaternion;
 import com.jme.scene.Spatial;
 import com.jme.scene.Node;
 import com.jme.scene.Skybox;
 import com.jme.scene.shape.Box;
-import com.jme.scene.shape.Cylinder;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.image.Texture;
@@ -20,6 +20,7 @@ import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
+import com.jme.scene.shape.Sphere;
 import com.jmex.terrain.util.MidPointHeightMap;
 import com.jmex.terrain.TerrainBlock;
 
@@ -209,21 +210,16 @@ public final class Factory {
 		rotation.fromAngles(angles);
 		translation.addLocal(rotation.getRotationColumn(2).mult(10f));
 
-		Cylinder cylinder = new Cylinder(name, 5, 15, .5f, 1.5f, true);
-		cylinder.setModelBound(new BoundingBox());
-		cylinder.updateModelBound();
-		/*MaterialState ms = renderer.createMaterialState();
-		ms.setColorMaterial(MaterialState.ColorMaterial.None);
-		ms.setDiffuse(ColorRGBA.red);
-		cylinder.setRenderState(ms);*/
+		Sphere sphere = new Sphere(name, 5, 20, 1);
+		sphere.setModelBound(new BoundingSphere());
+		sphere.updateModelBound();
+		sphere.updateRenderState();
+		sphere.setLocalTranslation(translation);
+		sphere.setLocalRotation(rotation);
 		GLSLShaderObjectsState testShader = renderer.createGLSLShaderObjectsState();
 		testShader.load(Factory.class.getClassLoader().getResource("shaders/sphereharm.vs"),
 				Factory.class.getClassLoader().getResource("shaders/sphereharm.fs"));
 		//testShader.setEnabled(true);
-		//cylinder.setRenderState(testShader);
-		cylinder.updateRenderState();
-		cylinder.setLocalTranslation(translation);
-		cylinder.setLocalRotation(rotation);
-		return cylinder;
+		return sphere;
 	}
 }
