@@ -29,10 +29,7 @@ public final class PlayerEntity extends Entity {
 		DEAD
 	};
 
-	private int score = 0;
-	private float angle = 0;
 	private float velocity = 0;
-	private float facing = 0;
 	private State state = null; // for cannon state
 	private Spatial barrel = null;
 
@@ -43,7 +40,7 @@ public final class PlayerEntity extends Entity {
 	 */
 	public PlayerEntity(Spatial self, Spatial barrel) {
 		super(self);
-		setHealth(50);
+		setHealth(1);
 		setState(State.REST);
 		this.barrel = barrel;
 	}
