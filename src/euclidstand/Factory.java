@@ -23,6 +23,8 @@ import com.jme.util.export.binary.BinaryImporter;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.shape.Sphere;
+import com.jme.util.resource.ResourceLocatorTool;
+import com.jme.util.resource.SimpleResourceLocator;
 import com.jmex.effects.particles.ParticleControllerListener;
 import com.jmex.effects.particles.ParticleMesh;
 import com.jmex.terrain.util.MidPointHeightMap;
@@ -37,6 +39,7 @@ import jmetest.TestChooser;
 public final class Factory {
 
 	private static final Logger logger = Logger.getLogger(Factory.class.getName());
+	private static Factory factory;
 	private static final String mediaDir = "media wip/";
 	private static final String shaderDir = "shaders/";
 	private static Random random = new Random();
@@ -44,13 +47,26 @@ public final class Factory {
 	private static final int mapsize = 32;
 	private static final float scale = 20;
 
+	private Factory() {
+	}
+
+	public static Factory getFactory() {
+		if (factory == null) {
+			ResourceLocatorTool.addResourceLocator(
+					ResourceLocatorTool.TYPE_TEXTURE, 
+					new SimpleResourceLocator(new File(mediaDir).toURI()));
+			factory = new Factory();
+		}
+		return factory;
+	}
+
 	/**
 	 * @param baseName of base model
 	 * @param barrelName of barrel model
 	 * @param renderer for binding materials
 	 * @return the player model
 	 */
-	public static Spatial buildPlayer(String baseName, String barrelName, Renderer renderer) {
+	public Spatial buildPlayer(String baseName, String barrelName, Renderer renderer) {
 		logger.fine("Building player");
 		Node node = null;
 		try {
@@ -87,7 +103,7 @@ public final class Factory {
 	 * @param renderer for binding materials
 	 * @return the terrain model
 	 */
-	public static TerrainBlock buildTerrain(String name, Renderer renderer) {
+	public TerrainBlock buildTerrain(String name, Renderer renderer) {
 		logger.fine("Building terrain");
 		MidPointHeightMap map = new MidPointHeightMap(mapsize, 1f);
 		float offset = (mapsize * scale) / 2;
@@ -110,7 +126,7 @@ public final class Factory {
 	 * @param name of model
 	 * @return the sky model
 	 */
-	public static Spatial buildSky(String name) {
+	public Spatial buildSky(String name) {
 		logger.fine("Building sky");
 		Skybox skybox = new Skybox(name, 500, 500, 500);
 		Texture north = TextureManager.loadTexture(
@@ -160,7 +176,7 @@ public final class Factory {
 	 * @param renderer for binding materials
 	 * @return the bad guy model
 	 */
-	public static Spatial buildBaddie(String name, Renderer renderer) {
+	public Spatial buildBaddie(String name, Renderer renderer) {
 		logger.fine("Building baddie");
 		float size = mapsize * scale;
 		int side = random.nextInt(4);
@@ -205,7 +221,7 @@ public final class Factory {
 	 * @param barrel model which forms starting coordinates for the shell
 	 * @return the shell model
 	 */
-	public static Spatial buildShell(String name, Renderer renderer, Spatial barrel) {
+	public Spatial buildShell(String name, Renderer renderer, Spatial barrel) {
 		logger.fine("Building shell");
 		Vector3f translation = new Vector3f(barrel.getWorldTranslation());
 		Quaternion rotation = new Quaternion(barrel.getWorldRotation());
@@ -227,20 +243,20 @@ public final class Factory {
 		return sphere;
 	}
 
-	public static ParticleMesh buildBigExplosion(String name, Renderer renderer, Spatial victim) {
+	public ParticleMesh buildBigExplosion(String name, Renderer renderer, Spatial victim) {
 		logger.fine("Building big explosion");
 		ParticleMesh mesh = buildExplosion(name, victim, "explosion.jme");
 		return mesh;
 	}
 
-	public static ParticleMesh buildSmallExplosion(String name, Renderer renderer, Spatial victim) {
+	public ParticleMesh buildSmallExplosion(String name, Renderer renderer, Spatial victim) {
 		logger.fine("Building small explosion");
 		ParticleMesh mesh = buildExplosion(name, victim, "fast-explosion.jme");
 		mesh.setLocalScale(.1f);
 		return mesh;
 	}
 
-	private static ParticleMesh buildExplosion(String name, Spatial victim, String filename) {
+	private ParticleMesh buildExplosion(String name, Spatial victim, String filename) {
 		File file = new File(mediaDir + filename);
 		ParticleMesh mesh = null;
 		try {

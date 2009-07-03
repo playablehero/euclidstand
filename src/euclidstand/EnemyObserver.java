@@ -66,7 +66,7 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 	private void createEnemy() {
 		createdBaddies += 1;
 		String name = "Badguy" + createdBaddies;
-		EnemyEntity badguy = new EnemyEntity(Factory.buildBaddie(name, renderer), target);
+		EnemyEntity badguy = new EnemyEntity(Factory.getFactory().buildBaddie(name, renderer), target);
 
 		entitiesToAdd.add(badguy);
 		badguy.addObserver(this);
@@ -78,7 +78,7 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 	public void update(Observable o, Object arg) {
 		logger.info("Enemy died");
 		EnemyEntity badguy = (EnemyEntity) o;
-		ParticleMesh explosion = Factory.buildSmallExplosion(
+		ParticleMesh explosion = Factory.getFactory().buildSmallExplosion(
 				badguy.getName() + "Death", renderer, badguy.getSelf());
 		enemyNode.attachChild(explosion);
 		enemyNode.updateRenderState();

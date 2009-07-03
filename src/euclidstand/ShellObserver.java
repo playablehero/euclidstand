@@ -34,7 +34,8 @@ public class ShellObserver extends EntityObserver implements Observer {
 	 */
 	public void update(Observable o, Object arg) {
 		ShellEntity shell = (ShellEntity) o;
-		ParticleMesh explosion = Factory.buildSmallExplosion("ShellExplosion", renderer, shell.getSelf());
+		ParticleMesh explosion = Factory.getFactory().buildSmallExplosion(
+				"ShellExplosion", renderer, shell.getSelf());
 
 		// Find enemies and hurt them
 		float explosionRadius = 10f;

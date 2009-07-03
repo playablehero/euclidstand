@@ -56,7 +56,7 @@ public final class PlayerObserver extends EntityObserver implements Observer {
 		Node playerNode = new Node("PlayerRelated");
 		sceneNode.attachChild(playerNode);
 		playerNode.attachChild(bulletNode);
-		playerNode.attachChild(Factory.buildPlayer("Player", "Barrel", renderer));
+		playerNode.attachChild(Factory.getFactory().buildPlayer("Player", "Barrel", renderer));
 		Spatial playerSpatial = playerNode.getChild("Player");
 		Spatial barrelSpatial = playerNode.getChild("Barrel");
 		PlayerInputHandler input = PlayerInputHandler.getHandler(playerSpatial, barrelSpatial);
@@ -90,7 +90,8 @@ public final class PlayerObserver extends EntityObserver implements Observer {
 		switch (state) {
 			case FIRING:
 				fired += 1;
-				Spatial shellSpatial = Factory.buildShell("Shell" + fired, renderer, localPlayer.getBarrel());
+				Spatial shellSpatial = Factory.getFactory().buildShell(
+						"Shell" + fired, renderer, localPlayer.getBarrel());
 				ShellEntity shell = ShellEntity.getShell(shellSpatial,
 						localPlayer.getFiringAngle(), localPlayer.getVelocity());
 				bulletNode.attachChild(shellSpatial);
@@ -99,7 +100,8 @@ public final class PlayerObserver extends EntityObserver implements Observer {
 				playerNode.updateRenderState();
 				break;
 			case DEAD:
-				ParticleMesh explosion = Factory.buildBigExplosion("PlayerDeath", renderer, localPlayer.getSelf());
+				ParticleMesh explosion = Factory.getFactory().buildBigExplosion(
+						"PlayerDeath", renderer, localPlayer.getSelf());
 				playerNode.attachChild(explosion);
 				playerNode.updateRenderState();
 				explosion.forceRespawn();

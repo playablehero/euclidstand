@@ -12,7 +12,6 @@ import com.jme.input.KeyBindingManager;
 import com.jmex.terrain.TerrainBlock;
 
 import com.acarter.scenemonitor.SceneMonitor;
-import com.jme.bounding.BoundingBox;
 import java.util.List;
 
 
@@ -57,14 +56,13 @@ public class EuclidStand extends SimpleGame {
 	@Override
 	protected void simpleInitGame() {
 		display.setTitle("Euclid's Last Stand");
-
 		sceneNode = new Node("Game Scene");
 		rootNode.attachChild(sceneNode);
 
 		logger.info("Building world");
-		terrain = Factory.buildTerrain("Terrain", display.getRenderer());
+		terrain = Factory.getFactory().buildTerrain("Terrain", display.getRenderer());
 		sceneNode.attachChild(terrain);
-		sceneNode.attachChild(Factory.buildSky("Sky"));
+		sceneNode.attachChild(Factory.getFactory().buildSky("Sky"));
 		//sceneNode.setLightCombineMode(Spatial.LightCombineMode.Off);
 
 		logger.info("Building entities");
