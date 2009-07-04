@@ -36,28 +36,32 @@ import jmetest.TestChooser;
 /**
  * Builder class which constructs model representations of ingame objects
  */
-public final class Factory {
+public final class Builder {
 
-	private static final Logger logger = Logger.getLogger(Factory.class.getName());
-	private static Factory factory;
+	private static final Logger logger = Logger.getLogger(Builder.class.getName());
 	private static final String mediaDir = "media wip/";
 	private static final String shaderDir = "shaders/";
-	private static Random random = new Random();
+	private static Builder builder;
 	// Terrain parameters
 	private static final int mapsize = 32;
 	private static final float scale = 20;
+	private Renderer renderer;
+	private Random random;
 
-	private Factory() {
+	protected Builder(Random random, Renderer renderer) {
+		this.random = random;
+		this.renderer = renderer;
 	}
 
-	public static Factory getFactory() {
-		if (factory == null) {
-			ResourceLocatorTool.addResourceLocator(
-					ResourceLocatorTool.TYPE_TEXTURE, 
-					new SimpleResourceLocator(new File(mediaDir).toURI()));
-			factory = new Factory();
-		}
-		return factory;
+	public static void setInstance(Builder builder) {
+		ResourceLocatorTool.addResourceLocator(
+				ResourceLocatorTool.TYPE_TEXTURE,
+				new SimpleResourceLocator(new File(mediaDir).toURI()));
+		Builder.builder = builder;
+	}
+
+	public static Builder getInstance() {
+		return builder;
 	}
 
 	/**
@@ -66,7 +70,7 @@ public final class Factory {
 	 * @param renderer for binding materials
 	 * @return the player model
 	 */
-	public Spatial buildPlayer(String baseName, String barrelName, Renderer renderer) {
+	public Spatial buildPlayer(String baseName, String barrelName) {
 		logger.fine("Building player");
 		Node node = null;
 		try {
@@ -82,7 +86,7 @@ public final class Factory {
 			node.attachChild(barrelNode);
 
 			GLSLShaderObjectsState testShader = renderer.createGLSLShaderObjectsState();
-			ClassLoader cl = Factory.class.getClassLoader();
+			ClassLoader cl = Builder.class.getClassLoader();
 			URL vertexShader = cl.getResource(shaderDir + "sphereharm.vs");
 			URL fragmentShader = cl.getResource(shaderDir + "sphereharm.fs");
 			testShader.load(vertexShader, fragmentShader);
@@ -103,7 +107,7 @@ public final class Factory {
 	 * @param renderer for binding materials
 	 * @return the terrain model
 	 */
-	public TerrainBlock buildTerrain(String name, Renderer renderer) {
+	public TerrainBlock buildTerrain(String name) {
 		logger.fine("Building terrain");
 		MidPointHeightMap map = new MidPointHeightMap(mapsize, 1f);
 		float offset = (mapsize * scale) / 2;
@@ -114,8 +118,8 @@ public final class Factory {
 		terrain.setModelBound(new BoundingBox());
 		terrain.updateModelBound();
 		GLSLShaderObjectsState testShader = renderer.createGLSLShaderObjectsState();
-		testShader.load(Factory.class.getClassLoader().getResource("shaders/sphereharm.vs"),
-				Factory.class.getClassLoader().getResource("shaders/sphereharm.fs"));
+		testShader.load(Builder.class.getClassLoader().getResource("shaders/sphereharm.vs"),
+				Builder.class.getClassLoader().getResource("shaders/sphereharm.fs"));
 		//testShader.setEnabled(true);
 		//terrain.setRenderState(testShader);
 		terrain.updateRenderState();
@@ -176,7 +180,7 @@ public final class Factory {
 	 * @param renderer for binding materials
 	 * @return the bad guy model
 	 */
-	public Spatial buildBaddie(String name, Renderer renderer) {
+	public Spatial buildBaddie(String name) {
 		logger.fine("Building baddie");
 		float size = mapsize * scale;
 		int side = random.nextInt(4);
@@ -206,8 +210,8 @@ public final class Factory {
 		ms.setDiffuse(ColorRGBA.red);
 		box.setRenderState(ms);
 		GLSLShaderObjectsState testShader = renderer.createGLSLShaderObjectsState();
-		testShader.load(Factory.class.getClassLoader().getResource("shaders/sphereharm.vs"),
-				Factory.class.getClassLoader().getResource("shaders/sphereharm.fs"));
+		testShader.load(Builder.class.getClassLoader().getResource("shaders/sphereharm.vs"),
+				Builder.class.getClassLoader().getResource("shaders/sphereharm.fs"));
 		//testShader.setEnabled(true);
 		//box.setRenderState(testShader);
 		box.updateRenderState();
@@ -221,7 +225,7 @@ public final class Factory {
 	 * @param barrel model which forms starting coordinates for the shell
 	 * @return the shell model
 	 */
-	public Spatial buildShell(String name, Renderer renderer, Spatial barrel) {
+	public Spatial buildShell(String name, Spatial barrel) {
 		logger.fine("Building shell");
 		Vector3f translation = new Vector3f(barrel.getWorldTranslation());
 		Quaternion rotation = new Quaternion(barrel.getWorldRotation());
@@ -237,19 +241,19 @@ public final class Factory {
 		sphere.setLocalTranslation(translation);
 		sphere.setLocalRotation(rotation);
 		GLSLShaderObjectsState testShader = renderer.createGLSLShaderObjectsState();
-		testShader.load(Factory.class.getClassLoader().getResource("shaders/sphereharm.vs"),
-				Factory.class.getClassLoader().getResource("shaders/sphereharm.fs"));
+		testShader.load(Builder.class.getClassLoader().getResource("shaders/sphereharm.vs"),
+				Builder.class.getClassLoader().getResource("shaders/sphereharm.fs"));
 		//testShader.setEnabled(true);
 		return sphere;
 	}
 
-	public ParticleMesh buildBigExplosion(String name, Renderer renderer, Spatial victim) {
+	public ParticleMesh buildBigExplosion(String name, Spatial victim) {
 		logger.fine("Building big explosion");
 		ParticleMesh mesh = buildExplosion(name, victim, "explosion.jme");
 		return mesh;
 	}
 
-	public ParticleMesh buildSmallExplosion(String name, Renderer renderer, Spatial victim) {
+	public ParticleMesh buildSmallExplosion(String name, Spatial victim) {
 		logger.fine("Building small explosion");
 		ParticleMesh mesh = buildExplosion(name, victim, "fast-explosion.jme");
 		mesh.setLocalScale(.1f);
@@ -271,7 +275,7 @@ public final class Factory {
 				}
 			});
 		} catch (IOException ex) {
-			Logger.getLogger(Factory.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(Builder.class.getName()).log(Level.SEVERE, null, ex);
 		}
 
 		return mesh;

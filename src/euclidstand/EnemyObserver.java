@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.jme.scene.Node;
-import com.jme.renderer.Renderer;
 import com.jmex.effects.particles.ParticleMesh;
 
 // TODO: Initialise bad guy attributes (appearance, speed, damage)
@@ -18,18 +17,15 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 
 	private static final Logger logger =
 			Logger.getLogger(EnemyObserver.class.getName());
-	private final Renderer renderer;
 	private final Node enemyNode;
 	private Entity target = null;
 	private int createdBaddies = 0;
 	private int currentBaddies = 0;
 
 	private EnemyObserver(List<Entity> entitiesToAdd,
-			Renderer renderer,
 			Entity target,
 			Node enemyNode) {
 		super(entitiesToAdd);
-		this.renderer = renderer;
 		this.target = target;
 		this.enemyNode = enemyNode;
 	}
@@ -46,12 +42,11 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 	 */
 	public static EnemyObserver getObserver(
 			List<Entity> entitiesToAdd,
-			Renderer renderer,
 			Entity target,
 			Node sceneNode) {
 		Node enemyNode = new Node("Enemies");
 		EnemyObserver observer =
-				new EnemyObserver(entitiesToAdd, renderer, target, enemyNode);
+				new EnemyObserver(entitiesToAdd, target, enemyNode);
 		sceneNode.attachChild(observer.enemyNode);
 		observer.createWave();
 		return observer;
@@ -66,7 +61,7 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 	private void createEnemy() {
 		createdBaddies += 1;
 		String name = "Badguy" + createdBaddies;
-		EnemyEntity badguy = new EnemyEntity(Factory.getFactory().buildBaddie(name, renderer), target);
+		EnemyEntity badguy = new EnemyEntity(Builder.getInstance().buildBaddie(name), target);
 
 		entitiesToAdd.add(badguy);
 		badguy.addObserver(this);
@@ -78,8 +73,8 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 	public void update(Observable o, Object arg) {
 		logger.info("Enemy died");
 		EnemyEntity badguy = (EnemyEntity) o;
-		ParticleMesh explosion = Factory.getFactory().buildSmallExplosion(
-				badguy.getName() + "Death", renderer, badguy.getSelf());
+		ParticleMesh explosion = Builder.getInstance().buildSmallExplosion(
+				badguy.getName() + "Death", badguy.getSelf());
 		enemyNode.attachChild(explosion);
 		enemyNode.updateRenderState();
 		explosion.forceRespawn();

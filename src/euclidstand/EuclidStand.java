@@ -13,6 +13,7 @@ import com.jmex.terrain.TerrainBlock;
 
 import com.acarter.scenemonitor.SceneMonitor;
 import java.util.List;
+import java.util.Random;
 
 
 /**
@@ -56,28 +57,27 @@ public class EuclidStand extends SimpleGame {
 	@Override
 	protected void simpleInitGame() {
 		display.setTitle("Euclid's Last Stand");
+		Builder.setInstance(new Builder(new Random(), display.getRenderer()));
 		sceneNode = new Node("Game Scene");
 		rootNode.attachChild(sceneNode);
 
 		logger.info("Building world");
-		terrain = Factory.getFactory().buildTerrain("Terrain", display.getRenderer());
+		terrain = Builder.getInstance().buildTerrain("Terrain");
 		sceneNode.attachChild(terrain);
-		sceneNode.attachChild(Factory.getFactory().buildSky("Sky"));
+		sceneNode.attachChild(Builder.getInstance().buildSky("Sky"));
 		//sceneNode.setLightCombineMode(Spatial.LightCombineMode.Off);
 
 		logger.info("Building entities");
 
 		ShellCollision shellCollision = new ShellCollision(entities);
-		ShellObserver shellObserver = new ShellObserver(entitiesToAdd,
-				shellCollision, display.getRenderer(), sceneNode);
+		ShellObserver shellObserver = new ShellObserver(entitiesToAdd, shellCollision, sceneNode);
 		observers.add(shellObserver);
 		PlayerObserver playerObserver = PlayerObserver.getObserver(
-				entitiesToAdd, display.getRenderer(), sceneNode, shellObserver);
+				entitiesToAdd, sceneNode, shellObserver);
 		PlayerEntity player = playerObserver.getPlayer();
 		observers.add(playerObserver);
 
-		EnemyObserver enemyObserver = EnemyObserver.getObserver(entitiesToAdd,
-				display.getRenderer(), player, sceneNode);
+		EnemyObserver enemyObserver = EnemyObserver.getObserver(entitiesToAdd, player, sceneNode);
 		observers.add(enemyObserver);
 
 		logger.info("Initialising camera");
