@@ -2,7 +2,6 @@ package euclidstand;
 
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
-import com.jme.renderer.Renderer;
 import com.jme.renderer.ColorRGBA;
 
 /**
@@ -11,16 +10,20 @@ import com.jme.renderer.ColorRGBA;
 public class Text2D {
 
 	private final Text textSpatial;
-	private String text = null;
+	private String text = "";
+	private final int screenWidth;
+	private final int screenHeight;
 
 	/**
 	 * Constructor for Text2D
 	 * @param textSpatial text model
 	 * @param text to display
 	 */
-	private Text2D(Text textSpatial, String text) {
+	private Text2D(Text textSpatial, String text, int screenWidth, int screenHeight) {
 		this.textSpatial = textSpatial;
 		this.text = text;
+		this.screenWidth = screenWidth;
+		this.screenHeight = screenHeight;
 	}
 
 	/**
@@ -29,9 +32,9 @@ public class Text2D {
 	 * @param text contents of the text instance
 	 * @return Text2D instance
 	 */
-	public static Text2D getText2D(String name, String text) {
+	public static Text2D getText2D(String name, String text, int screenWidth, int screenHeight) {
 		Text textSpatial = Text.createDefaultTextLabel(name, text);
-		return new Text2D(textSpatial, text);
+		return new Text2D(textSpatial, text, screenWidth, screenHeight);
 	}
 
 	/**
@@ -47,8 +50,8 @@ public class Text2D {
 	 * @param renderer to get screen width from 
 	 * @param pixels from right edge of screen
 	 */
-	public void right(Renderer renderer, int pixels) {
-		textSpatial.getLocalTranslation().x = renderer.getWidth() - textSpatial.getWidth() - pixels;
+	public void right(int pixels) {
+		textSpatial.getLocalTranslation().x = screenWidth - textSpatial.getWidth() - pixels;
 	}
 
 	/**
@@ -64,8 +67,8 @@ public class Text2D {
 	 * @param renderer to get screen height from 
 	 * @param pixels from top edge of screen
 	 */
-	public void top(Renderer renderer, int pixels) {
-		textSpatial.getLocalTranslation().y = renderer.getHeight() - textSpatial.getHeight() - pixels;
+	public void top(int pixels) {
+		textSpatial.getLocalTranslation().y = screenHeight - textSpatial.getHeight() - pixels;
 	}
 
 	/**
@@ -90,9 +93,6 @@ public class Text2D {
 	 * @param text to display
 	 */
 	public void setText(String text) {
-		if (text == null) {
-			text = "";
-		}
 		this.text = text;
 		textSpatial.print(text);
 	}

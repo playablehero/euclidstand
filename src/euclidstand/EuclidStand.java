@@ -89,14 +89,16 @@ public class EuclidStand extends SimpleGame {
 		chasecam.getMouseLook().setRotateTarget(false);
 
 		logger.info("Creating GUI");
-		angleText = Text2D.getText2D("Angle", "");
-		angleText.top(display.getRenderer(), 10);
+		int width = display.getRenderer().getWidth();
+		int height = display.getRenderer().getHeight();
+		angleText = Text2D.getText2D("Angle", "", width, height);
+		angleText.top(10);
 		sceneNode.attachChild(angleText.getSpatial());
-		velocityText = Text2D.getText2D("Velocity", "");
-		velocityText.top(display.getRenderer(), 30);
+		velocityText = Text2D.getText2D("Velocity", "", width, height);
+		velocityText.top(30);
 		sceneNode.attachChild(velocityText.getSpatial());
-		facingText = Text2D.getText2D("Facing", "");
-		facingText.top(display.getRenderer(), 50);
+		facingText = Text2D.getText2D("Facing", "", width, height);
+		facingText.top(50);
 		sceneNode.attachChild(facingText.getSpatial());
 
 		KeyBindingManager.getKeyBindingManager().set("toggle_debug", KeyInput.KEY_U);
