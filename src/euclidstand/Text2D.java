@@ -1,16 +1,14 @@
 package euclidstand;
 
 import com.jme.scene.Spatial;
-import com.jme.scene.Text;
-import com.jme.renderer.ColorRGBA;
+import euclidstand.engine.JMEText;
 
 /**
  * Text class encapsulating details for a line of text on the screen
  */
 public class Text2D {
 
-	private final Text textSpatial;
-	private String text = "";
+	private final JMEText textSpatial;
 	private final int screenWidth;
 	private final int screenHeight;
 
@@ -19,9 +17,8 @@ public class Text2D {
 	 * @param textSpatial text model
 	 * @param text to display
 	 */
-	private Text2D(Text textSpatial, String text, int screenWidth, int screenHeight) {
+	public Text2D(JMEText textSpatial, int screenWidth, int screenHeight) {
 		this.textSpatial = textSpatial;
-		this.text = text;
 		this.screenWidth = screenWidth;
 		this.screenHeight = screenHeight;
 	}
@@ -33,8 +30,13 @@ public class Text2D {
 	 * @return Text2D instance
 	 */
 	public static Text2D getText2D(String name, String text, int screenWidth, int screenHeight) {
-		Text textSpatial = Text.createDefaultTextLabel(name, text);
-		return new Text2D(textSpatial, text, screenWidth, screenHeight);
+		JMEText textSpatial = new JMEText();
+		textSpatial.setName(name);
+		textSpatial.print(text);
+		textSpatial.setDefaultCulling();
+		textSpatial.setDefaultTexture();
+		textSpatial.setDefaultFontBlend();
+		return new Text2D(textSpatial, screenWidth, screenHeight);
 	}
 
 	/**
@@ -42,7 +44,7 @@ public class Text2D {
 	 * @param pixels from left edge of screen
 	 */
 	public void left(int pixels) {
-		textSpatial.getLocalTranslation().x = pixels;
+		textSpatial.setX(pixels);
 	}
 
 	/**
@@ -51,7 +53,7 @@ public class Text2D {
 	 * @param pixels from right edge of screen
 	 */
 	public void right(int pixels) {
-		textSpatial.getLocalTranslation().x = screenWidth - textSpatial.getWidth() - pixels;
+		textSpatial.setX(screenWidth - textSpatial.getWidth() - pixels);
 	}
 
 	/**
@@ -59,7 +61,7 @@ public class Text2D {
 	 * @param pixels from bottom edge of screen
 	 */
 	public void bottom(int pixels) {
-		textSpatial.getLocalTranslation().y = pixels;
+		textSpatial.setY(pixels);
 	}
 
 	/**
@@ -68,18 +70,7 @@ public class Text2D {
 	 * @param pixels from top edge of screen
 	 */
 	public void top(int pixels) {
-		textSpatial.getLocalTranslation().y = screenHeight - textSpatial.getHeight() - pixels;
-	}
-
-	/**
-	 * Sets text colour
-	 * @param r red
-	 * @param g green
-	 * @param b blue
-	 * @param a alpha
-	 */
-	public void setColour(float r, float g, float b, float a) {
-		textSpatial.setTextColor(new ColorRGBA(r, g, b, a));
+		textSpatial.setY(screenHeight - textSpatial.getHeight() - pixels);
 	}
 
 	/**
@@ -93,7 +84,6 @@ public class Text2D {
 	 * @param text to display
 	 */
 	public void setText(String text) {
-		this.text = text;
 		textSpatial.print(text);
 	}
 
@@ -101,7 +91,7 @@ public class Text2D {
 	 * @return text being displayed
 	 */
 	public String getText() {
-		return text;
+		return textSpatial.getText().toString();
 	}
 
 	/**
