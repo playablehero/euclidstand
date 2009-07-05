@@ -34,7 +34,7 @@ public class EnemyEntity extends Entity {
 			getTarget().hit(getDamage());
 			die();
 		}
-		if (getHealth() < 0)
+		else if (getHealth() <= 0)
 			die();
 	}
 
