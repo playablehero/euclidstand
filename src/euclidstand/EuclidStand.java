@@ -57,6 +57,7 @@ public class EuclidStand extends SimpleGame {
 	protected void simpleInitGame() {
 		display.setTitle("Euclid's Last Stand");
 		Builder.setInstance(new Builder(new Random(), display.getRenderer()));
+		Builder builder = Builder.getInstance();
 		Node node = new Node("Game Scene");
 		sceneNode = new JMENode(node);
 		rootNode.attachChild(node);
@@ -64,7 +65,7 @@ public class EuclidStand extends SimpleGame {
 		logger.info("Building world");
 		terrain = Builder.getInstance().buildTerrain("Terrain");
 		sceneNode.attachChild(terrain);
-		sceneNode.attachChild(Builder.getInstance().buildSky("Sky"));
+		sceneNode.attachChild(builder.buildSky("Sky"));
 		//sceneNode.setLightCombineMode(Spatial.LightCombineMode.Off);
 
 		logger.info("Building entities");
@@ -73,14 +74,16 @@ public class EuclidStand extends SimpleGame {
 		JMENode explosionNode = new JMENode("Explosions");
 		sceneNode.attachChild(explosionNode);
 		ShellObserver shellObserver = new ShellObserver(entitiesToAdd, 
-				shellCollision, sceneNode, explosionNode);
+				shellCollision, sceneNode, explosionNode, builder);
 		observers.add(shellObserver);
+
 		PlayerObserver playerObserver = PlayerObserver.getObserver(
-				entitiesToAdd, sceneNode, shellObserver);
+				entitiesToAdd, sceneNode, shellObserver, builder);
 		PlayerEntity player = playerObserver.getPlayer();
 		observers.add(playerObserver);
 
-		EnemyObserver enemyObserver = EnemyObserver.getObserver(entitiesToAdd, player, sceneNode);
+		EnemyObserver enemyObserver = EnemyObserver.getObserver(
+				entitiesToAdd, player, sceneNode, builder);
 		observers.add(enemyObserver);
 
 		logger.info("Initialising camera");

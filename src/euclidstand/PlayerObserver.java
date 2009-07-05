@@ -20,6 +20,7 @@ public final class PlayerObserver extends EntityObserver implements Observer {
 	private final PlayerEntity player;
 	private final PlayerInputHandler input;
 	private final ShellObserver shellObserver;
+	private final Builder builder;
 	private int fired = 0;
 
 	private PlayerObserver(List<Entity> entitiesToAdd,
@@ -27,13 +28,15 @@ public final class PlayerObserver extends EntityObserver implements Observer {
 			JMENode playerNode,
 			PlayerEntity player,
 			PlayerInputHandler input,
-			ShellObserver shellObserver) {
+			ShellObserver shellObserver,
+			Builder builder) {
 		super(entitiesToAdd);
 		this.bulletNode = bulletNode;
 		this.playerNode = playerNode;
 		this.player = player;
 		this.input = input;
 		this.shellObserver = shellObserver;
+		this.builder = builder;
 	}
 
 	/**
@@ -46,18 +49,19 @@ public final class PlayerObserver extends EntityObserver implements Observer {
 	public static PlayerObserver getObserver(
 			List<Entity> entitiesToAdd,
 			JMENode sceneNode,
-			ShellObserver shellObserver) {
+			ShellObserver shellObserver,
+			Builder builder) {
 		JMENode bulletNode = new JMENode("Bullets");
 		JMENode playerNode = new JMENode("PlayerRelated");
 		sceneNode.attachChild(playerNode);
 		playerNode.attachChild(bulletNode);
-		playerNode.attachChild(Builder.getInstance().buildPlayer("Player", "Barrel"));
+		playerNode.attachChild(builder.buildPlayer("Player", "Barrel"));
 		JMESpatial playerSpatial = playerNode.getChild("Player");
 		JMESpatial barrelSpatial = playerNode.getChild("Barrel");
 		PlayerInputHandler input = PlayerInputHandler.getHandler(playerSpatial, barrelSpatial);
 		PlayerEntity player = new PlayerEntity(playerSpatial, barrelSpatial);
 		PlayerObserver observer = new PlayerObserver(
-				entitiesToAdd, bulletNode, playerNode, player, input, shellObserver);
+				entitiesToAdd, bulletNode, playerNode, player, input, shellObserver, builder);
 		player.addObserver(observer);
 		entitiesToAdd.add(player);
 
@@ -87,7 +91,7 @@ public final class PlayerObserver extends EntityObserver implements Observer {
 				fired += 1;
 				//JMESpatial shellSpatial = Builder.getInstance().buildShell(
 						//"Shell" + fired, localPlayer.getBarrel());
-				JMESpatial shellSpatial = Builder.getInstance().buildShell(
+				JMESpatial shellSpatial = builder.buildShell(
 						"Shell" + fired, localPlayer.getSelf());
 				ShellEntity shell = ShellEntity.getShell(shellSpatial,
 						localPlayer.getFiringAngle(), localPlayer.getVelocity());
@@ -97,7 +101,7 @@ public final class PlayerObserver extends EntityObserver implements Observer {
 				playerNode.updateRenderState();
 				break;
 			case DEAD:
-				ParticleMesh explosion = Builder.getInstance().buildBigExplosion(
+				ParticleMesh explosion = builder.buildBigExplosion(
 						"PlayerDeath", localPlayer.getSelf());
 				playerNode.attachChild(new JMESpatial(explosion));
 				playerNode.updateRenderState();

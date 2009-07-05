@@ -17,13 +17,15 @@ public class ShellObserver extends EntityObserver implements Observer {
 	private final JMENode sceneNode;
 	private final JMENode explosionNode;
 	private final ShellCollision shellCollision;
+	private final Builder builder;
 
 	public ShellObserver(List<Entity> entitiesToAdd, ShellCollision shellCollision,
-			JMENode sceneNode, JMENode explosionNode) {
+			JMENode sceneNode, JMENode explosionNode, Builder builder) {
 		super(entitiesToAdd);
 		this.shellCollision = shellCollision;
 		this.sceneNode = sceneNode;
 		this.explosionNode = explosionNode;
+		this.builder = builder;
 	}
 
 	/**
@@ -34,7 +36,7 @@ public class ShellObserver extends EntityObserver implements Observer {
 	 */
 	public void update(Observable o, Object arg) {
 		ShellEntity shell = (ShellEntity) o;
-		ParticleMesh explosion = Builder.getInstance().buildSmallExplosion(
+		ParticleMesh explosion = builder.buildSmallExplosion(
 				"ShellExplosion", shell.getSelf());
 
 		// Find enemies and hurt them

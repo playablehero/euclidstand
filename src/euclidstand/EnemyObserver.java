@@ -19,16 +19,19 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 	private static final Logger logger =
 			Logger.getLogger(EnemyObserver.class.getName());
 	private final JMENode enemyNode;
+	private final Builder builder;
 	private Entity target = null;
 	private int createdBaddies = 0;
 	private int currentBaddies = 0;
 
 	private EnemyObserver(List<Entity> entitiesToAdd,
 			Entity target,
-			JMENode enemyNode) {
+			JMENode enemyNode,
+			Builder builder) {
 		super(entitiesToAdd);
 		this.target = target;
 		this.enemyNode = enemyNode;
+		this.builder = builder;
 	}
 
 	/**
@@ -44,10 +47,11 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 	public static EnemyObserver getObserver(
 			List<Entity> entitiesToAdd,
 			Entity target,
-			JMENode sceneNode) {
+			JMENode sceneNode,
+			Builder builder) {
 		JMENode enemyNode = new JMENode("Enemies");
 		EnemyObserver observer =
-				new EnemyObserver(entitiesToAdd, target, enemyNode);
+				new EnemyObserver(entitiesToAdd, target, enemyNode, builder);
 		sceneNode.attachChild(observer.enemyNode);
 		observer.createWave();
 		return observer;
@@ -62,7 +66,7 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 	private void createEnemy() {
 		createdBaddies += 1;
 		String name = "Badguy" + createdBaddies;
-		EnemyEntity badguy = new EnemyEntity(Builder.getInstance().buildBaddie(name), target);
+		EnemyEntity badguy = new EnemyEntity(builder.buildBaddie(name), target);
 
 		entitiesToAdd.add(badguy);
 		badguy.addObserver(this);
@@ -74,7 +78,7 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 	public void update(Observable o, Object arg) {
 		logger.info("Enemy died");
 		EnemyEntity badguy = (EnemyEntity) o;
-		ParticleMesh explosion = Builder.getInstance().buildSmallExplosion(
+		ParticleMesh explosion = builder.buildSmallExplosion(
 				badguy.getName() + "Death", badguy.getSelf());
 		enemyNode.attachChild(new JMESpatial(explosion));
 		enemyNode.updateRenderState();
