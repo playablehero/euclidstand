@@ -1,7 +1,7 @@
 package euclidstand;
 
-import com.jme.scene.Spatial;
-import com.jmex.terrain.TerrainBlock;
+import euclidstand.engine.JMESpatial;
+import euclidstand.engine.JMETerrain;
 
 /**
  * Game object encapsulating player logic
@@ -31,14 +31,14 @@ public final class PlayerEntity extends Entity {
 
 	private float velocity = 0;
 	private State state = null; // for cannon state
-	private Spatial barrel = null;
+	private JMESpatial barrel = null;
 
 	/**
 	 * Constructor for Player
 	 * @param self Model representing the player
 	 * @param barrel Model representing the cannon barrel
 	 */
-	public PlayerEntity(Spatial self, Spatial barrel) {
+	public PlayerEntity(JMESpatial self, JMESpatial barrel) {
 		super(self);
 		setHealth(50);
 		setState(State.REST);
@@ -68,7 +68,7 @@ public final class PlayerEntity extends Entity {
 	 * @param terrain to use for checking
 	 */
 	@Override
-	public void updateTerrain(TerrainBlock terrain) {
+	public void updateTerrain(JMETerrain terrain) {
 		super.updateTerrain(terrain);
 		getSelf().lockBounds();
 	}
@@ -96,7 +96,7 @@ public final class PlayerEntity extends Entity {
 	/**
 	 * @return the model for the barrel
 	 */
-	public Spatial getBarrel() {
+	public JMESpatial getBarrel() {
 		return barrel;
 	}
 
@@ -105,7 +105,7 @@ public final class PlayerEntity extends Entity {
 	 */
 	public float getFiringAngle() {
 		// invert the angle
-		float firingAngle = -barrel.getLocalRotation().toAngles(null)[0];
+		float firingAngle = -barrel.getXRotation();
 		float angle_range = Constants.UP_ANGLE_MAXIMUM - Constants.DOWN_ANGLE_MAXIMUM;
 		// assume that UP_INPUT is negative, and DOWN_INPUT is positive
 		float input_range = Math.abs(Constants.UP_INPUT_MAXIMUM) + Constants.DOWN_INPUT_MAXIMUM;
@@ -124,7 +124,6 @@ public final class PlayerEntity extends Entity {
 	 * @return the current facing of the player
 	 */
 	public float getFacing() {
-		float[] angles = getSelf().getLocalRotation().toAngles(null);
-		return angles[1];
+		return getSelf().getYRotation();
 	}
 }

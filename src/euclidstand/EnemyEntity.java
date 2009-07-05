@@ -1,6 +1,6 @@
 package euclidstand;
 
-import com.jme.scene.Spatial;
+import euclidstand.engine.JMESpatial;
 
 /**
  * Game object encapsulating baddie logic
@@ -15,7 +15,7 @@ public class EnemyEntity extends Entity {
 	 * @param self Model representing the bad guy
 	 * @param target Entity that the bad guy should be trying to hit
 	 */
-	public EnemyEntity(Spatial self, Entity target) {
+	public EnemyEntity(JMESpatial self, Entity target) {
 		super(self);
 		setTarget(target);
 		setSpeed(15);

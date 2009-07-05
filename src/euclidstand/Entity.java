@@ -2,9 +2,8 @@ package euclidstand;
 
 import java.util.Observable;
 
-import com.jme.bounding.BoundingBox;
-import com.jme.scene.Spatial;
-import com.jmex.terrain.TerrainBlock;
+import euclidstand.engine.JMESpatial;
+import euclidstand.engine.JMETerrain;
 
 /**
  * Generic game object.
@@ -16,7 +15,7 @@ public class Entity extends Observable {
 	/**
 	 * Model representing this entity
 	 */
-	private final Spatial self;
+	private final JMESpatial self;
 	/**
 	 * Movement speed per frame
 	 */
@@ -34,7 +33,7 @@ public class Entity extends Observable {
 	 * Constructor for Entity
 	 * @param self Model representing the entity
 	 */
-	public Entity(Spatial self) {
+	public Entity(JMESpatial self) {
 		this.self = self;
 	}
 
@@ -50,12 +49,8 @@ public class Entity extends Observable {
 	 * Sets the entity's y-value to be level with terrain
 	 * @param terrain to use for checking
 	 */
-	public void updateTerrain(TerrainBlock terrain) {
-		if (self.getWorldBound() instanceof BoundingBox) {
-			float spatialY = terrain.getHeightFromWorld(self.getLocalTranslation()) +
-					((BoundingBox) self.getWorldBound()).yExtent;
-			self.getLocalTranslation().y = spatialY;
-		}
+	public void updateTerrain(JMETerrain terrain) {
+		self.setY(terrain.getHeightAboveTerrain(self));
 	}
 
 	/**
@@ -63,8 +58,7 @@ public class Entity extends Observable {
 	 * @param interpolation time variable
 	 */
 	public void moveForward(float interpolation) {
-		self.getLocalTranslation().addLocal(self.getLocalRotation().
-				getRotationColumn(2).mult(interpolation * getSpeed()));
+		self.moveZAxis(interpolation * getSpeed());
 	}
 
 	/**
@@ -95,7 +89,6 @@ public class Entity extends Observable {
 	 * @param damage amount of damage
 	 */
 	public void hit(int damage) {
-		System.out.println(getName() + " has been hit for " + damage + " damage");
 		health -= damage;
 	}
 
@@ -104,7 +97,7 @@ public class Entity extends Observable {
 	 *
 	 * @return instance of Spatial
 	 */
-	public Spatial getSelf() {
+	public JMESpatial getSelf() {
 		return self;
 	}
 

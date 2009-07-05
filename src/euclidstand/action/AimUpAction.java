@@ -1,30 +1,22 @@
 package euclidstand.action;
 
-import java.util.logging.Logger;
-
 import com.jme.math.Matrix3f;
 import com.jme.math.Vector3f;
-import com.jme.scene.Spatial;
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.KeyInputAction;
+import euclidstand.engine.JMESpatial;
 
 /**
  * Copied from com.jme.input.action.KeyNodeLookUpAction to implement constraints
  */
 public class AimUpAction extends KeyInputAction {
-	private static final Logger logger = Logger.getLogger(AimUpAction.class.getName());
-	
+
 	//temporary variables to handle rotation
 	private static final Matrix3f incr = new Matrix3f();
-
-	private static final Matrix3f tempMa = new Matrix3f();
-
 	private static final Matrix3f tempMb = new Matrix3f();
-
 	private static final Vector3f tempVa = new Vector3f();
 	//the node to manipulate
-	private Spatial node;
-
+	private JMESpatial node;
 	private float constraint;
 
 	/**
@@ -35,7 +27,7 @@ public class AimUpAction extends KeyInputAction {
 	 * @param constraint
 	 *			the angle limit which this action can go
 	 */
-	public AimUpAction(Spatial node, float speed, float constraint) {
+	public AimUpAction(JMESpatial node, float speed, float constraint) {
 		this.node = node;
 		this.speed = speed;
 		this.constraint = constraint;
@@ -49,16 +41,12 @@ public class AimUpAction extends KeyInputAction {
 	 * @see com.jme.input.action.KeyInputAction#performAction(InputActionEvent)
 	 */
 	public void performAction(InputActionEvent evt) {
-		float[] angles = node.getLocalRotation().toAngles(null);
-		//logger.info("x: " + angles[0] + " y: " + angles[1] + " z: " + angles[2]);
-		if (angles[0] > constraint) {
-			node.getLocalRotation().getRotationColumn(0, tempVa);
+		if (node.getXRotation() > constraint) {
+			node.getXRotationAsVector(tempVa);
 			tempVa.normalizeLocal();
 			incr.fromAngleNormalAxis(-speed * evt.getTime(), tempVa);
-			node.getLocalRotation().fromRotationMatrix(
-					incr.mult(node.getLocalRotation().toRotationMatrix(tempMa),
-							tempMb));
-			node.getLocalRotation().normalize();
+			node.setRotationMatrix(incr.mult(node.getRotationMatrix(), tempMb));
+			node.normaliseRotation();
 		}
 	}
 }

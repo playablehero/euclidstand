@@ -2,8 +2,9 @@ package euclidstand;
 
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
-import com.jme.scene.Spatial;
-import com.jmex.terrain.TerrainBlock;
+import euclidstand.engine.JMENode;
+import euclidstand.engine.JMESpatial;
+import euclidstand.engine.JMETerrain;
 
 /**
  * Defines a cannon shell
@@ -19,13 +20,13 @@ public class ShellEntity extends Entity {
 	 * @param velocity of initial position
 	 * @param facing of initial position
 	 */
-	private ShellEntity(Spatial self, float velocity, float verticalVelocity) {
+	private ShellEntity(JMESpatial self, float velocity, float verticalVelocity) {
 		super(self);
 		setSpeed(velocity);
 		this.verticalVelocity = verticalVelocity;
 	}
 
-	public static ShellEntity getShell(Spatial self, float angle, float velocity) {
+	public static ShellEntity getShell(JMESpatial self, float angle, float velocity) {
 		float verticalVelocity = (float) Math.sin(angle) * velocity * Constants.VERTICAL_SCALE;
 		return new ShellEntity(self, velocity, verticalVelocity);
 	}
@@ -34,9 +35,9 @@ public class ShellEntity extends Entity {
 	 * Attaches an explosion to the location of this shell
 	 * @param explosion model
 	 */
-	public void setExplosion(Spatial explosion) {
-		getSelf().getParent().attachChild(explosion);
-		getSelf().getParent().updateRenderState();
+	public void setExplosion(JMESpatial explosion, JMENode node) {
+		node.attachChild(explosion);
+		node.updateRenderState();
 	}
 
 	/**
@@ -55,9 +56,9 @@ public class ShellEntity extends Entity {
 	 * Checks whether shell has impacted terrain
 	 */
 	@Override
-	public void updateTerrain(TerrainBlock terrain) {
-		Spatial self = getSelf();
-		float height = terrain.getHeightFromWorld(self.getLocalTranslation());
+	public void updateTerrain(JMETerrain terrain) {
+		JMESpatial self = getSelf();
+		float height = terrain.getHeightAboveTerrain(self);
 		float spatialY = ((BoundingSphere)self.getWorldBound()).getRadius() +
 				self.getLocalTranslation().getY() - height;
 		if (spatialY < Constants.SHELL_COLLISION_THRESHOLD) {

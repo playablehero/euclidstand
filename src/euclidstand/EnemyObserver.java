@@ -5,8 +5,9 @@ import java.util.Observable;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.jme.scene.Node;
 import com.jmex.effects.particles.ParticleMesh;
+import euclidstand.engine.JMENode;
+import euclidstand.engine.JMESpatial;
 
 // TODO: Initialise bad guy attributes (appearance, speed, damage)
 /**
@@ -17,14 +18,14 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 
 	private static final Logger logger =
 			Logger.getLogger(EnemyObserver.class.getName());
-	private final Node enemyNode;
+	private final JMENode enemyNode;
 	private Entity target = null;
 	private int createdBaddies = 0;
 	private int currentBaddies = 0;
 
 	private EnemyObserver(List<Entity> entitiesToAdd,
 			Entity target,
-			Node enemyNode) {
+			JMENode enemyNode) {
 		super(entitiesToAdd);
 		this.target = target;
 		this.enemyNode = enemyNode;
@@ -43,8 +44,8 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 	public static EnemyObserver getObserver(
 			List<Entity> entitiesToAdd,
 			Entity target,
-			Node sceneNode) {
-		Node enemyNode = new Node("Enemies");
+			JMENode sceneNode) {
+		JMENode enemyNode = new JMENode("Enemies");
 		EnemyObserver observer =
 				new EnemyObserver(entitiesToAdd, target, enemyNode);
 		sceneNode.attachChild(observer.enemyNode);
@@ -75,7 +76,7 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 		EnemyEntity badguy = (EnemyEntity) o;
 		ParticleMesh explosion = Builder.getInstance().buildSmallExplosion(
 				badguy.getName() + "Death", badguy.getSelf());
-		enemyNode.attachChild(explosion);
+		enemyNode.attachChild(new JMESpatial(explosion));
 		enemyNode.updateRenderState();
 		explosion.forceRespawn();
 		currentBaddies -= 1;

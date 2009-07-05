@@ -1,9 +1,10 @@
 package euclidstand;
 
 import com.jme.bounding.BoundingSphere;
-import com.jme.scene.Node;
-import com.jme.scene.shape.Sphere;
 import com.jmex.effects.particles.ParticleMesh;
+import euclidstand.engine.JMENode;
+import euclidstand.engine.JMESpatial;
+import euclidstand.engine.JMESphere;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -13,13 +14,16 @@ import java.util.Observer;
  */
 public class ShellObserver extends EntityObserver implements Observer {
 
-	private final Node searchNode;
+	private final JMENode sceneNode;
+	private final JMENode explosionNode;
 	private final ShellCollision shellCollision;
 
-	public ShellObserver(List<Entity> entitiesToAdd, ShellCollision shellCollision, Node searchNode) {
+	public ShellObserver(List<Entity> entitiesToAdd, ShellCollision shellCollision, 
+			JMENode sceneNode, JMENode explosionNode) {
 		super(entitiesToAdd);
 		this.shellCollision = shellCollision;
-		this.searchNode = searchNode;
+		this.sceneNode = sceneNode;
+		this.explosionNode = explosionNode;
 	}
 
 	/**
@@ -35,11 +39,11 @@ public class ShellObserver extends EntityObserver implements Observer {
 
 		// Find enemies and hurt them
 		float explosionRadius = 10f;
-		Sphere sphere = new Sphere(null, shell.getSelf().getWorldTranslation(), 5, 5, explosionRadius);
+		JMESphere sphere = new JMESphere(null, shell.getSelf(), 5, 5, explosionRadius);
 		sphere.setModelBound(new BoundingSphere());
 		sphere.updateModelBound();
-		sphere.calculateCollisions(searchNode, shellCollision);
-		shell.setExplosion(explosion);
+		sphere.calculateCollisions(sceneNode, shellCollision);
+		shell.setExplosion(new JMESpatial(explosion), explosionNode);
 		explosion.forceRespawn();
 	}
 }

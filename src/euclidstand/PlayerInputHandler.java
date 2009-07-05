@@ -1,14 +1,14 @@
 package euclidstand;
 
-import com.jme.scene.Spatial;
 import com.jme.input.InputHandler;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
-import com.jme.input.action.KeyNodeRotateLeftAction;
-import com.jme.input.action.KeyNodeRotateRightAction;
 
 import euclidstand.action.AimUpAction;
 import euclidstand.action.AimDownAction;
+import euclidstand.engine.JMEKeyNodeRotateLeftAction;
+import euclidstand.engine.JMEKeyNodeRotateRightAction;
+import euclidstand.engine.JMESpatial;
 
 /**
  * Handles player input keys
@@ -24,7 +24,7 @@ public final class PlayerInputHandler extends InputHandler {
 	 * @param barrel
 	 * @return an instance of PlayerInputHandler
 	 */
-	public static PlayerInputHandler getHandler(Spatial base, Spatial barrel) {
+	public static PlayerInputHandler getHandler(JMESpatial base, JMESpatial barrel) {
 		PlayerInputHandler handler = new PlayerInputHandler();
 		handler.setKeyBindings();
 		handler.setActions(base, barrel);
@@ -48,10 +48,10 @@ public final class PlayerInputHandler extends InputHandler {
 		keyboard.set("shoot", KeyInput.KEY_SPACE);
 	}
 
-	private void setActions(Spatial base, Spatial barrel) {
+	private void setActions(JMESpatial base, JMESpatial barrel) {
 		addAction(new AimUpAction(barrel, 1f, Constants.UP_INPUT_MAXIMUM), "aimUp", true);
 		addAction(new AimDownAction(barrel, 1f, Constants.DOWN_INPUT_MAXIMUM), "aimDown", true);
-		addAction(new KeyNodeRotateLeftAction(base, 1f), "aimLeft", true);
-		addAction(new KeyNodeRotateRightAction(base, 1f), "aimRight", true);
+		addAction(new JMEKeyNodeRotateLeftAction(base, 1f), "aimLeft", true);
+		addAction(new JMEKeyNodeRotateRightAction(base, 1f), "aimRight", true);
 	}
 }

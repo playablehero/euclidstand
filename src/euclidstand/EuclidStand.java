@@ -2,16 +2,15 @@ package euclidstand;
 
 import java.util.logging.Logger;
 import java.util.LinkedList;
-
 import com.jme.app.SimpleGame;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
-import com.jme.input.ChaseCamera;
 import com.jme.input.KeyInput;
 import com.jme.input.KeyBindingManager;
-import com.jmex.terrain.TerrainBlock;
-
 import com.acarter.scenemonitor.SceneMonitor;
+import euclidstand.engine.JMEChaseCamera;
+import euclidstand.engine.JMENode;
+import euclidstand.engine.JMETerrain;
 import java.util.List;
 import java.util.Random;
 
@@ -26,9 +25,9 @@ public class EuclidStand extends SimpleGame {
 	private final List<Entity> entities;
 	private final List<Entity> entitiesToAdd;
 	private final List<EntityObserver> observers;
-	private Node sceneNode = null;
-	private ChaseCamera chasecam = null;
-	private TerrainBlock terrain = null;
+	private JMENode sceneNode = null;
+	private JMEChaseCamera chasecam = null;
+	private JMETerrain terrain = null;
 	private Text2D angleText = null;
 	private Text2D velocityText = null;
 	private Text2D facingText = null;
@@ -58,8 +57,9 @@ public class EuclidStand extends SimpleGame {
 	protected void simpleInitGame() {
 		display.setTitle("Euclid's Last Stand");
 		Builder.setInstance(new Builder(new Random(), display.getRenderer()));
-		sceneNode = new Node("Game Scene");
-		rootNode.attachChild(sceneNode);
+		Node node = new Node("Game Scene");
+		sceneNode = new JMENode(node);
+		rootNode.attachChild(node);
 
 		logger.info("Building world");
 		terrain = Builder.getInstance().buildTerrain("Terrain");
@@ -70,7 +70,10 @@ public class EuclidStand extends SimpleGame {
 		logger.info("Building entities");
 
 		ShellCollision shellCollision = new ShellCollision(entities);
-		ShellObserver shellObserver = new ShellObserver(entitiesToAdd, shellCollision, sceneNode);
+		JMENode explosionNode = new JMENode("Explosions");
+		sceneNode.attachChild(explosionNode);
+		ShellObserver shellObserver = new ShellObserver(entitiesToAdd, 
+				shellCollision, sceneNode, explosionNode);
 		observers.add(shellObserver);
 		PlayerObserver playerObserver = PlayerObserver.getObserver(
 				entitiesToAdd, sceneNode, shellObserver);
@@ -82,11 +85,11 @@ public class EuclidStand extends SimpleGame {
 
 		logger.info("Initialising camera");
 
-		chasecam = new ChaseCamera(cam, player.getSelf());
+		chasecam = new JMEChaseCamera(cam, player.getSelf());
 		chasecam.setEnableSpring(false);
-		chasecam.getMouseLook().setMouseXMultiplier(0.5f);
-		chasecam.getMouseLook().setMouseYMultiplier(0.1f);
-		chasecam.getMouseLook().setRotateTarget(false);
+		chasecam.setMouseXMultiplier(0.5f);
+		chasecam.setMouseYMultiplier(0.1f);
+		chasecam.setRotateTarget(false);
 
 		logger.info("Creating GUI");
 		int width = display.getRenderer().getWidth();

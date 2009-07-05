@@ -10,14 +10,13 @@ import java.util.Random;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
-import com.jme.math.Quaternion;
-import com.jme.scene.Spatial;
 import com.jme.scene.Node;
 import com.jme.scene.Skybox;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.image.Texture;
+import com.jme.math.Quaternion;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jme.renderer.ColorRGBA;
@@ -28,8 +27,9 @@ import com.jme.util.resource.SimpleResourceLocator;
 import com.jmex.effects.particles.ParticleControllerListener;
 import com.jmex.effects.particles.ParticleMesh;
 import com.jmex.terrain.util.MidPointHeightMap;
-import com.jmex.terrain.TerrainBlock;
 
+import euclidstand.engine.JMESpatial;
+import euclidstand.engine.JMETerrain;
 import java.net.URL;
 import jmetest.TestChooser;
 
@@ -70,7 +70,7 @@ public final class Builder {
 	 * @param renderer for binding materials
 	 * @return the player model
 	 */
-	public Spatial buildPlayer(String baseName, String barrelName) {
+	public JMESpatial buildPlayer(String baseName, String barrelName) {
 		logger.fine("Building player");
 		Node node = null;
 		try {
@@ -99,7 +99,7 @@ public final class Builder {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return node;
+		return new JMESpatial(node);
 	}
 
 	/**
@@ -107,11 +107,11 @@ public final class Builder {
 	 * @param renderer for binding materials
 	 * @return the terrain model
 	 */
-	public TerrainBlock buildTerrain(String name) {
+	public JMETerrain buildTerrain(String name) {
 		logger.fine("Building terrain");
 		MidPointHeightMap map = new MidPointHeightMap(mapsize, 1f);
 		float offset = (mapsize * scale) / 2;
-		TerrainBlock terrain = new TerrainBlock(
+		JMETerrain terrain = new JMETerrain(
 				name,
 				mapsize, new Vector3f(scale, 0.1f, scale),
 				map.getHeightMap(), new Vector3f(-offset, 0, -offset));
@@ -130,7 +130,7 @@ public final class Builder {
 	 * @param name of model
 	 * @return the sky model
 	 */
-	public Spatial buildSky(String name) {
+	public JMESpatial buildSky(String name) {
 		logger.fine("Building sky");
 		Skybox skybox = new Skybox(name, 500, 500, 500);
 		Texture north = TextureManager.loadTexture(
@@ -172,7 +172,7 @@ public final class Builder {
 		skybox.setTexture(Skybox.Face.Down, down);
 		skybox.preloadTextures();
 		skybox.updateRenderState();
-		return skybox;
+		return new JMESpatial(skybox);
 	}
 
 	/**
@@ -180,7 +180,7 @@ public final class Builder {
 	 * @param renderer for binding materials
 	 * @return the bad guy model
 	 */
-	public Spatial buildBaddie(String name) {
+	public JMESpatial buildBaddie(String name) {
 		logger.fine("Building baddie");
 		float size = mapsize * scale;
 		int side = random.nextInt(4);
@@ -216,7 +216,7 @@ public final class Builder {
 		//box.setRenderState(testShader);
 		box.updateRenderState();
 		box.lookAt(new Vector3f(0, 0, 0), new Vector3f(0, 1, 0));
-		return box;
+		return new JMESpatial(box);
 	}
 
 	/**
@@ -225,7 +225,7 @@ public final class Builder {
 	 * @param barrel model which forms starting coordinates for the shell
 	 * @return the shell model
 	 */
-	public Spatial buildShell(String name, Spatial barrel) {
+	public JMESpatial buildShell(String name, JMESpatial barrel) {
 		logger.fine("Building shell");
 		Vector3f translation = new Vector3f(barrel.getWorldTranslation());
 		Quaternion rotation = new Quaternion(barrel.getWorldRotation());
@@ -244,23 +244,23 @@ public final class Builder {
 		testShader.load(Builder.class.getClassLoader().getResource("shaders/sphereharm.vs"),
 				Builder.class.getClassLoader().getResource("shaders/sphereharm.fs"));
 		//testShader.setEnabled(true);
-		return sphere;
+		return new JMESpatial(sphere);
 	}
 
-	public ParticleMesh buildBigExplosion(String name, Spatial victim) {
+	public ParticleMesh buildBigExplosion(String name, JMESpatial victim) {
 		logger.fine("Building big explosion");
 		ParticleMesh mesh = buildExplosion(name, victim, "explosion.jme");
 		return mesh;
 	}
 
-	public ParticleMesh buildSmallExplosion(String name, Spatial victim) {
+	public ParticleMesh buildSmallExplosion(String name, JMESpatial victim) {
 		logger.fine("Building small explosion");
 		ParticleMesh mesh = buildExplosion(name, victim, "fast-explosion.jme");
 		mesh.setLocalScale(.1f);
 		return mesh;
 	}
 
-	private ParticleMesh buildExplosion(String name, Spatial victim, String filename) {
+	private ParticleMesh buildExplosion(String name, JMESpatial victim, String filename) {
 		File file = new File(mediaDir + filename);
 		ParticleMesh mesh = null;
 		try {
