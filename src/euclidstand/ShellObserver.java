@@ -18,7 +18,7 @@ public class ShellObserver extends EntityObserver implements Observer {
 	private final JMENode explosionNode;
 	private final ShellCollision shellCollision;
 
-	public ShellObserver(List<Entity> entitiesToAdd, ShellCollision shellCollision, 
+	public ShellObserver(List<Entity> entitiesToAdd, ShellCollision shellCollision,
 			JMENode sceneNode, JMENode explosionNode) {
 		super(entitiesToAdd);
 		this.shellCollision = shellCollision;
@@ -43,7 +43,8 @@ public class ShellObserver extends EntityObserver implements Observer {
 		sphere.setModelBound(new BoundingSphere());
 		sphere.updateModelBound();
 		sphere.calculateCollisions(sceneNode, shellCollision);
-		shell.setExplosion(new JMESpatial(explosion), explosionNode);
+		explosionNode.attachChild(new JMESpatial(explosion));
+		explosion.updateRenderState();
 		explosion.forceRespawn();
 	}
 }

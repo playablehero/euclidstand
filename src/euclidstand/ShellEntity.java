@@ -1,8 +1,6 @@
 package euclidstand;
 
 import com.jme.bounding.BoundingSphere;
-import com.jme.math.Vector3f;
-import euclidstand.engine.JMENode;
 import euclidstand.engine.JMESpatial;
 import euclidstand.engine.JMETerrain;
 
@@ -32,15 +30,6 @@ public class ShellEntity extends Entity {
 	}
 
 	/**
-	 * Attaches an explosion to the location of this shell
-	 * @param explosion model
-	 */
-	public void setExplosion(JMESpatial explosion, JMENode node) {
-		node.attachChild(explosion);
-		node.updateRenderState();
-	}
-
-	/**
 	 * Updates shell movement
 	 * @param interpolation time variable
 	 */
@@ -48,8 +37,7 @@ public class ShellEntity extends Entity {
 	public void update(float interpolation) {
 		moveForward(interpolation);
 		verticalVelocity += Constants.VERTICAL_INCREMENT * interpolation;
-		Vector3f v = new Vector3f(0, -verticalVelocity, 0);
-		getSelf().getLocalTranslation().addLocal(v);
+		getSelf().addTranslation(0, -verticalVelocity, 0);
 	}
 
 	/**
@@ -59,8 +47,8 @@ public class ShellEntity extends Entity {
 	public void updateTerrain(JMETerrain terrain) {
 		JMESpatial self = getSelf();
 		float height = terrain.getHeightAboveTerrain(self);
-		float spatialY = ((BoundingSphere)self.getWorldBound()).getRadius() +
-				self.getLocalTranslation().getY() - height;
+		float spatialY = ((BoundingSphere) self.getWorldBound()).getRadius() +
+				self.getY() - height;
 		if (spatialY < Constants.SHELL_COLLISION_THRESHOLD) {
 			setRemove(true);
 			setChanged();

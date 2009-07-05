@@ -65,6 +65,22 @@ public class JMESpatial {
 		return spatial.getLocalRotation().toRotationMatrix();
 	}
 
+	public void addTranslation(float x, float y, float z) {
+		spatial.getLocalTranslation().addLocal(x, y, z);
+	}
+
+	public float getX() {
+		return spatial.getLocalTranslation().getX();
+	}
+
+	public float getY() {
+		return spatial.getLocalTranslation().getY();
+	}
+
+	public float getZ() {
+		return spatial.getLocalTranslation().getZ();
+	}
+
 	public void setX(float x) {
 		spatial.getLocalTranslation().setX(x);
 	}
