@@ -35,13 +35,15 @@ public class ShellObserverTest {
 		ShellObserver instance = new ShellObserver(entitiesToAdd, shellCollision, sceneNode, explosionNode, builder, explosionSphere);
 		instance.update(shellEntity, null);
 
-		verify(shellEntity).getSelf();
+		verify(shellEntity, times(2)).getSelf();
 		verify(builder).buildSmallExplosion(anyString(), eq(shellSpatial));
+		verify(explosionSphere).setSphereToLocation(shellSpatial);
 		verify(explosionSphere).calculateCollisions(sceneNode, shellCollision);
+		verify(shellCollision).clear();
 		verify(explosionNode).attachChild(explosion);
 		verify(explosion).updateRenderState();
 		verify(explosion).forceRespawn();
-		verifyNoMoreInteractions(shellEntity, builder, explosionSphere, explosionNode, explosion);
+		verifyNoMoreInteractions(shellEntity, builder, explosionSphere, explosionNode, explosion, shellCollision);
 		verifyZeroInteractions(entitiesToAdd, sceneNode, shellSpatial);
 	}
 }

@@ -2,7 +2,6 @@ package euclidstand;
 
 import com.jmex.effects.particles.ParticleMesh;
 import euclidstand.engine.JMENode;
-import euclidstand.engine.JMESpatial;
 import euclidstand.engine.JMESphere;
 import java.util.List;
 import java.util.Observable;
@@ -42,7 +41,6 @@ public class ShellObserver extends EntityObserver implements Observer {
 
 		// Find enemies and hurt them
 		explosionSphere.setSphereToLocation(shell.getSelf());
-		explosionSphere.updateModelBound();
 		explosionSphere.calculateCollisions(sceneNode, shellCollision);
 		shellCollision.clear();
 		explosionNode.attachChild(explosion);

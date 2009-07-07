@@ -28,5 +28,6 @@ public class JMESphere extends Sphere {
 
 	public void setSphereToLocation(JMESpatial spatial) {
 		updateGeometry(spatial.getWorldTranslation(), getZSamples(), getRadialSamples(), getRadius());
+		updateModelBound();
 	}
 }
