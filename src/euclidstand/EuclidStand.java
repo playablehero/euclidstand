@@ -10,6 +10,7 @@ import com.jme.input.KeyBindingManager;
 import com.acarter.scenemonitor.SceneMonitor;
 import euclidstand.engine.JMEChaseCamera;
 import euclidstand.engine.JMENode;
+import euclidstand.engine.JMESphere;
 import euclidstand.engine.JMETerrain;
 import java.util.List;
 import java.util.Random;
@@ -73,8 +74,11 @@ public class EuclidStand extends SimpleGame {
 		ShellCollision shellCollision = new ShellCollision(entities);
 		JMENode explosionNode = new JMENode("Explosions");
 		sceneNode.attachChild(explosionNode);
+		float explosionRadius = 10f;
+		JMESphere sphere = new JMESphere(null, 5, 5, explosionRadius);
+		sphere.setBoundsToSphere();
 		ShellObserver shellObserver = new ShellObserver(entitiesToAdd, 
-				shellCollision, sceneNode, explosionNode, builder);
+				shellCollision, sceneNode, explosionNode, builder, sphere);
 		observers.add(shellObserver);
 
 		PlayerObserver playerObserver = PlayerObserver.getObserver(

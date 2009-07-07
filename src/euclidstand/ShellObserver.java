@@ -1,6 +1,5 @@
 package euclidstand;
 
-import com.jme.bounding.BoundingSphere;
 import com.jmex.effects.particles.ParticleMesh;
 import euclidstand.engine.JMENode;
 import euclidstand.engine.JMESpatial;
@@ -18,14 +17,16 @@ public class ShellObserver extends EntityObserver implements Observer {
 	private final JMENode explosionNode;
 	private final ShellCollision shellCollision;
 	private final Builder builder;
+	private final JMESphere explosionSphere;
 
 	public ShellObserver(List<Entity> entitiesToAdd, ShellCollision shellCollision,
-			JMENode sceneNode, JMENode explosionNode, Builder builder) {
+			JMENode sceneNode, JMENode explosionNode, Builder builder, JMESphere explosionSphere) {
 		super(entitiesToAdd);
 		this.shellCollision = shellCollision;
 		this.sceneNode = sceneNode;
 		this.explosionNode = explosionNode;
 		this.builder = builder;
+		this.explosionSphere = explosionSphere;
 	}
 
 	/**
@@ -40,12 +41,8 @@ public class ShellObserver extends EntityObserver implements Observer {
 				"ShellExplosion", shell.getSelf());
 
 		// Find enemies and hurt them
-		float explosionRadius = 10f;
-		JMESphere sphere = new JMESphere(null, shell.getSelf(), 5, 5, explosionRadius);
-		sphere.setModelBound(new BoundingSphere());
-		sphere.updateModelBound();
-		sphere.calculateCollisions(sceneNode, shellCollision);
-		explosionNode.attachChild(new JMESpatial(explosion));
+		explosionSphere.calculateCollisions(sceneNode, shellCollision);
+		explosionNode.attachChild(explosion);
 		explosion.updateRenderState();
 		explosion.forceRespawn();
 	}
