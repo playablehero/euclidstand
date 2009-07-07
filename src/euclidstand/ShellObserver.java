@@ -41,7 +41,10 @@ public class ShellObserver extends EntityObserver implements Observer {
 				"ShellExplosion", shell.getSelf());
 
 		// Find enemies and hurt them
+		explosionSphere.setSphereToLocation(shell.getSelf());
+		explosionSphere.updateModelBound();
 		explosionSphere.calculateCollisions(sceneNode, shellCollision);
+		shellCollision.clear();
 		explosionNode.attachChild(explosion);
 		explosion.updateRenderState();
 		explosion.forceRespawn();
