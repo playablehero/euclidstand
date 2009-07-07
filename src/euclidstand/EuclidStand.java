@@ -82,8 +82,12 @@ public class EuclidStand extends SimpleGame {
 		PlayerEntity player = playerObserver.getPlayer();
 		observers.add(playerObserver);
 
+		JMENode enemyNode = new JMENode("Enemies");
+		EnemyEntity.Factory enemyFactory = new EnemyEntity.Factory();
 		EnemyObserver enemyObserver = EnemyObserver.getObserver(
-				entitiesToAdd, player, sceneNode, builder);
+				entitiesToAdd, player, builder, enemyNode, enemyFactory);
+		enemyObserver.createWave(10);
+		sceneNode.attachChild(enemyNode);
 		observers.add(enemyObserver);
 
 		logger.info("Initialising camera");

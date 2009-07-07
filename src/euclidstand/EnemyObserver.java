@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 
 import com.jmex.effects.particles.ParticleMesh;
 import euclidstand.engine.JMENode;
-import euclidstand.engine.JMESpatial;
 
 // TODO: Initialise bad guy attributes (appearance, speed, damage)
 /**
@@ -20,6 +19,7 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 			Logger.getLogger(EnemyObserver.class.getName());
 	private final JMENode enemyNode;
 	private final Builder builder;
+	private final EnemyEntity.Factory enemyFactory;
 	private Entity target = null;
 	private int createdBaddies = 0;
 	private int currentBaddies = 0;
@@ -27,11 +27,13 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 	private EnemyObserver(List<Entity> entitiesToAdd,
 			Entity target,
 			JMENode enemyNode,
-			Builder builder) {
+			Builder builder,
+			EnemyEntity.Factory enemyFactory) {
 		super(entitiesToAdd);
 		this.target = target;
 		this.enemyNode = enemyNode;
 		this.builder = builder;
+		this.enemyFactory = enemyFactory;
 	}
 
 	/**
@@ -47,18 +49,16 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 	public static EnemyObserver getObserver(
 			List<Entity> entitiesToAdd,
 			Entity target,
-			JMENode sceneNode,
-			Builder builder) {
-		JMENode enemyNode = new JMENode("Enemies");
+			Builder builder,
+			JMENode enemyNode,
+			EnemyEntity.Factory enemyFactory) {
 		EnemyObserver observer =
-				new EnemyObserver(entitiesToAdd, target, enemyNode, builder);
-		sceneNode.attachChild(observer.enemyNode);
-		observer.createWave();
+				new EnemyObserver(entitiesToAdd, target, enemyNode, builder, enemyFactory);
 		return observer;
 	}
 
-	private void createWave() {
-		for (int i = 0; i < 10; i++) {
+	public void createWave(int number) {
+		for (int i = 0; i < number; i++) {
 			createEnemy();
 		}
 	}
@@ -66,8 +66,7 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 	private void createEnemy() {
 		createdBaddies += 1;
 		String name = "Badguy" + createdBaddies;
-		EnemyEntity badguy = new EnemyEntity(builder.buildBaddie(name), target);
-
+		EnemyEntity badguy = enemyFactory.make(builder.buildBaddie(name), target);
 		entitiesToAdd.add(badguy);
 		badguy.addObserver(this);
 		enemyNode.attachChild(badguy.getSelf());
@@ -80,12 +79,12 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 		EnemyEntity badguy = (EnemyEntity) o;
 		ParticleMesh explosion = builder.buildSmallExplosion(
 				badguy.getName() + "Death", badguy.getSelf());
-		enemyNode.attachChild(new JMESpatial(explosion));
+		enemyNode.attachChild(explosion);
 		enemyNode.updateRenderState();
 		explosion.forceRespawn();
 		currentBaddies -= 1;
-		if (currentBaddies == 0) {
-			createWave();
+		if (currentBaddies <= 0) {
+			createWave(10);
 		}
 	}
 }

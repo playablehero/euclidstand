@@ -36,7 +36,7 @@ import jmetest.TestChooser;
 /**
  * Builder class which constructs model representations of ingame objects
  */
-public final class Builder {
+public class Builder {
 
 	private static final Logger logger = Logger.getLogger(Builder.class.getName());
 	private static final String mediaDir = "media wip/";

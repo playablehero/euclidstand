@@ -71,4 +71,10 @@ public class EnemyEntity extends Entity {
 	public int getDamage() {
 		return damage;
 	}
+
+	public static class Factory {
+		public EnemyEntity make(JMESpatial self, Entity target) {
+			return new EnemyEntity(self, target);
+		}
+	}
 }
