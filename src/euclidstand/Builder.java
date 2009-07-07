@@ -41,27 +41,21 @@ public class Builder {
 	private static final Logger logger = Logger.getLogger(Builder.class.getName());
 	private static final String mediaDir = "media wip/";
 	private static final String shaderDir = "shaders/";
-	private static Builder builder;
 	// Terrain parameters
 	private static final int mapsize = 32;
 	private static final float scale = 20;
 	private Renderer renderer;
 	private Random random;
 
-	protected Builder(Random random, Renderer renderer) {
-		this.random = random;
-		this.renderer = renderer;
+	public Builder() {
+		this.random = new Random();
 	}
 
-	public static void setInstance(Builder builder) {
+	public void initialise(Renderer renderer) {
 		ResourceLocatorTool.addResourceLocator(
 				ResourceLocatorTool.TYPE_TEXTURE,
 				new SimpleResourceLocator(new File(mediaDir).toURI()));
-		Builder.builder = builder;
-	}
-
-	public static Builder getInstance() {
-		return builder;
+		this.renderer = renderer;
 	}
 
 	/**
