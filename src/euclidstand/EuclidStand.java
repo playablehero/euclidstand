@@ -10,6 +10,7 @@ import com.jme.input.KeyBindingManager;
 import com.acarter.scenemonitor.SceneMonitor;
 import euclidstand.engine.JMEChaseCamera;
 import euclidstand.engine.JMENode;
+import euclidstand.engine.JMESpatial;
 import euclidstand.engine.JMESphere;
 import euclidstand.engine.JMETerrain;
 import java.util.List;
@@ -81,10 +82,28 @@ public class EuclidStand extends SimpleGame {
 				shellCollision, sceneNode, explosionNode, builder, sphere);
 		observers.add(shellObserver);
 
-		PlayerObserver playerObserver = PlayerObserver.getObserver(
-				entitiesToAdd, sceneNode, shellObserver, builder);
-		PlayerEntity player = playerObserver.getPlayer();
+		JMENode.Factory nodeFactory = new JMENode.Factory();
+		PlayerEntity.Factory playerEntityFactory = new PlayerEntity.Factory();
+		PlayerInputHandler.Factory inputHandlerFactory = new PlayerInputHandler.Factory();
+		ShellEntity.Factory shellEntityFactory = new ShellEntity.Factory();
+
+		JMENode bulletNode = nodeFactory.make("Bullets");
+		JMENode playerNode = nodeFactory.make("PlayerRelated");
+		sceneNode.attachChild(playerNode);
+		playerNode.attachChild(bulletNode);
+		playerNode.attachChild(builder.buildPlayer("Player", "Barrel"));
+		JMESpatial playerSpatial = playerNode.getChild("Player");
+		JMESpatial barrelSpatial = playerNode.getChild("Barrel");
+		PlayerInputHandler inputHandler = inputHandlerFactory.make(playerSpatial, barrelSpatial);
+		PlayerEntity player = playerEntityFactory.make(playerSpatial, barrelSpatial);
+
+		/*PlayerObserver playerObserver = PlayerObserver.getObserver(
+				entitiesToAdd, sceneNode, shellObserver, builder,
+				nodeFactory, playerEntityFactory, inputHandlerFactory, shellEntityFactory);*/
+		PlayerObserver playerObserver = new PlayerObserver(entitiesToAdd, bulletNode, playerNode, player, inputHandler, shellObserver, builder, shellEntityFactory);
+		player.addObserver(playerObserver);
 		observers.add(playerObserver);
+		entitiesToAdd.add(player);
 
 		JMENode enemyNode = new JMENode("Enemies");
 		EnemyEntity.Factory enemyFactory = new EnemyEntity.Factory();

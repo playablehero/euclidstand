@@ -13,22 +13,9 @@ import euclidstand.engine.JMESpatial;
 /**
  * Handles player input keys
  */
-public final class PlayerInputHandler extends InputHandler {
+public class PlayerInputHandler extends InputHandler {
 
 	private PlayerInputHandler() {
-	}
-
-	/**
-	 * Factory method to create a handler
-	 * @param base
-	 * @param barrel
-	 * @return an instance of PlayerInputHandler
-	 */
-	public static PlayerInputHandler getHandler(JMESpatial base, JMESpatial barrel) {
-		PlayerInputHandler handler = new PlayerInputHandler();
-		handler.setKeyBindings();
-		handler.setActions(base, barrel);
-		return handler;
 	}
 
 	/**
@@ -53,5 +40,21 @@ public final class PlayerInputHandler extends InputHandler {
 		addAction(new AimDownAction(barrel, 1f, Constants.DOWN_INPUT_MAXIMUM), "aimDown", true);
 		addAction(new JMEKeyNodeRotateLeftAction(base, 1f), "aimLeft", true);
 		addAction(new JMEKeyNodeRotateRightAction(base, 1f), "aimRight", true);
+	}
+
+	public static class Factory {
+
+		/**
+		 * Factory method to create a handler
+		 * @param base
+		 * @param barrel
+		 * @return an instance of PlayerInputHandler
+		 */
+		public PlayerInputHandler make(JMESpatial base, JMESpatial barrel) {
+			PlayerInputHandler handler = new PlayerInputHandler();
+			handler.setKeyBindings();
+			handler.setActions(base, barrel);
+			return handler;
+		}
 	}
 }

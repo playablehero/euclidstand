@@ -8,6 +8,7 @@ import com.jme.scene.Spatial;
  * @author jmtan
  */
 public class JMENode {
+
 	private final Node node;
 
 	public JMENode(String name) {
@@ -40,5 +41,16 @@ public class JMENode {
 
 	protected Node getNode() {
 		return node;
+	}
+
+	public static class Factory {
+
+		public JMENode make(String name) {
+			return new JMENode(name);
+		}
+
+		public JMENode make(Node node) {
+			return new JMENode(node);
+		}
 	}
 }

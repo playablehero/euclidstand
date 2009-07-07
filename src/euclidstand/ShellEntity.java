@@ -55,4 +55,11 @@ public class ShellEntity extends Entity {
 			notifyObservers();
 		}
 	}
+
+	public static class Factory {
+		public ShellEntity make(JMESpatial self, float angle, float velocity) {
+			float verticalVelocity = (float) Math.sin(angle) * velocity * Constants.VERTICAL_SCALE;
+			return new ShellEntity(self, velocity, verticalVelocity);
+		}
+	}
 }

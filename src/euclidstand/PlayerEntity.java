@@ -6,7 +6,7 @@ import euclidstand.engine.JMETerrain;
 /**
  * Game object encapsulating player logic
  */
-public final class PlayerEntity extends Entity {
+public class PlayerEntity extends Entity {
 	/**
 	 * Current state of the player
 	 */
@@ -125,5 +125,11 @@ public final class PlayerEntity extends Entity {
 	 */
 	public float getFacing() {
 		return getSelf().getYRotation();
+	}
+
+	public static class Factory {
+		public PlayerEntity make(JMESpatial self, JMESpatial barrel) {
+			return new PlayerEntity(self, barrel);
+		}
 	}
 }

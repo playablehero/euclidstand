@@ -11,6 +11,7 @@ import com.jme.scene.Spatial;
  * @author jmtan
  */
 public class JMESpatial {
+
 	private final Spatial spatial;
 
 	public JMESpatial(Spatial spatial) {
@@ -145,4 +146,11 @@ public class JMESpatial {
 		spatial.getLocalTranslation().addLocal(spatial.getLocalRotation().
 				getRotationColumn(column).mult(amount));
 	}
+
+/*	public static class Factory {
+
+		public JMESpatial make(Spatial spatial) {
+			return new JMESpatial(spatial);
+		}
+	}*/
 }

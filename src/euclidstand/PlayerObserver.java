@@ -21,15 +21,17 @@ public final class PlayerObserver extends EntityObserver implements Observer {
 	private final PlayerInputHandler input;
 	private final ShellObserver shellObserver;
 	private final Builder builder;
+	private final ShellEntity.Factory shellEntityFactory;
 	private int fired = 0;
 
-	private PlayerObserver(List<Entity> entitiesToAdd,
+	public PlayerObserver(List<Entity> entitiesToAdd,
 			JMENode bulletNode,
 			JMENode playerNode,
 			PlayerEntity player,
 			PlayerInputHandler input,
 			ShellObserver shellObserver,
-			Builder builder) {
+			Builder builder,
+			ShellEntity.Factory shellEntityFactory) {
 		super(entitiesToAdd);
 		this.bulletNode = bulletNode;
 		this.playerNode = playerNode;
@@ -37,6 +39,7 @@ public final class PlayerObserver extends EntityObserver implements Observer {
 		this.input = input;
 		this.shellObserver = shellObserver;
 		this.builder = builder;
+		this.shellEntityFactory = shellEntityFactory;
 	}
 
 	/**
@@ -46,27 +49,33 @@ public final class PlayerObserver extends EntityObserver implements Observer {
 	 * @param sceneNode for current scene
 	 * @return instance of PlayerObserver
 	 */
-	public static PlayerObserver getObserver(
+	/*public static PlayerObserver getObserver(
 			List<Entity> entitiesToAdd,
 			JMENode sceneNode,
 			ShellObserver shellObserver,
-			Builder builder) {
-		JMENode bulletNode = new JMENode("Bullets");
-		JMENode playerNode = new JMENode("PlayerRelated");
+			Builder builder,
+			JMENode.Factory nodeFactory,
+			PlayerEntity.Factory playerEntityFactory,
+			PlayerInputHandler.Factory inputHandlerFactory,
+			ShellEntity.Factory shellEntityFactory) {
+		JMENode bulletNode = nodeFactory.make("Bullets");
+		JMENode playerNode = nodeFactory.make("PlayerRelated");
 		sceneNode.attachChild(playerNode);
 		playerNode.attachChild(bulletNode);
 		playerNode.attachChild(builder.buildPlayer("Player", "Barrel"));
 		JMESpatial playerSpatial = playerNode.getChild("Player");
 		JMESpatial barrelSpatial = playerNode.getChild("Barrel");
-		PlayerInputHandler input = PlayerInputHandler.getHandler(playerSpatial, barrelSpatial);
-		PlayerEntity player = new PlayerEntity(playerSpatial, barrelSpatial);
+
+		PlayerInputHandler input = inputHandlerFactory.make(playerSpatial, barrelSpatial);
+		PlayerEntity player = playerEntityFactory.make(playerSpatial, barrelSpatial);
 		PlayerObserver observer = new PlayerObserver(
-				entitiesToAdd, bulletNode, playerNode, player, input, shellObserver, builder);
+				entitiesToAdd, bulletNode, playerNode, player, input, 
+				shellObserver, builder, shellEntityFactory);
 		player.addObserver(observer);
 		entitiesToAdd.add(player);
 
 		return observer;
-	}
+	}*/
 
 	/**
 	 * Updates the input with current frame time
@@ -89,11 +98,9 @@ public final class PlayerObserver extends EntityObserver implements Observer {
 		switch (state) {
 			case FIRING:
 				fired += 1;
-				//JMESpatial shellSpatial = Builder.getInstance().buildShell(
-						//"Shell" + fired, localPlayer.getBarrel());
 				JMESpatial shellSpatial = builder.buildShell(
-						"Shell" + fired, localPlayer.getSelf());
-				ShellEntity shell = ShellEntity.getShell(shellSpatial,
+						"Shell" + fired, localPlayer.getBarrel());
+				ShellEntity shell = shellEntityFactory.make(shellSpatial,
 						localPlayer.getFiringAngle(), localPlayer.getVelocity());
 				bulletNode.attachChild(shellSpatial);
 				shell.addObserver(shellObserver);
@@ -103,18 +110,11 @@ public final class PlayerObserver extends EntityObserver implements Observer {
 			case DEAD:
 				ParticleMesh explosion = builder.buildBigExplosion(
 						"PlayerDeath", localPlayer.getSelf());
-				playerNode.attachChild(new JMESpatial(explosion));
+				playerNode.attachChild(explosion);
 				playerNode.updateRenderState();
 				explosion.forceRespawn();
 				break;
 		}
-	}
-
-	/**
-	 * @return instance of PlayerInputHandler
-	 */
-	public PlayerInputHandler getInput() {
-		return input;
 	}
 
 	/**
