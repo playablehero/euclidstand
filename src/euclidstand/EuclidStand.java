@@ -4,7 +4,6 @@ import java.util.logging.Logger;
 import java.util.LinkedList;
 import com.jme.app.SimpleGame;
 import com.jme.math.Vector3f;
-import com.jme.scene.Node;
 import com.jme.input.KeyInput;
 import com.jme.input.KeyBindingManager;
 import com.acarter.scenemonitor.SceneMonitor;
@@ -27,6 +26,12 @@ public class EuclidStand extends SimpleGame {
 	private final List<Entity> entities;
 	private final List<Entity> entitiesToAdd;
 	private final List<EntityObserver> observers;
+	private final List<Entity> entitiesToRemove;
+	private final JMENode.Factory nodeFactory;
+	private final PlayerEntity.Factory playerEntityFactory;
+	private final PlayerInputHandler.Factory inputHandlerFactory;
+	private final ShellEntity.Factory shellEntityFactory;
+	private final EnemyEntity.Factory enemyFactory;
 	private JMENode sceneNode = null;
 	private JMEChaseCamera chasecam = null;
 	private JMETerrain terrain = null;
@@ -42,6 +47,12 @@ public class EuclidStand extends SimpleGame {
 		entities = new LinkedList<Entity>();
 		entitiesToAdd = new LinkedList<Entity>();
 		observers = new LinkedList<EntityObserver>();
+		entitiesToRemove = new LinkedList<Entity>();
+		nodeFactory = new JMENode.Factory();
+		playerEntityFactory = new PlayerEntity.Factory();
+		inputHandlerFactory = new PlayerInputHandler.Factory();
+		shellEntityFactory = new ShellEntity.Factory();
+		enemyFactory = new EnemyEntity.Factory();
 	}
 
 	/**
@@ -60,20 +71,18 @@ public class EuclidStand extends SimpleGame {
 		display.setTitle("Euclid's Last Stand");
 		Builder.setInstance(new Builder(new Random(), display.getRenderer()));
 		Builder builder = Builder.getInstance();
-		Node node = new Node("Game Scene");
-		sceneNode = new JMENode(node);
-		rootNode.attachChild(node);
+		sceneNode = nodeFactory.make("Game Scene");
+		sceneNode.attachToParent(rootNode);
 
 		logger.info("Building world");
-		terrain = Builder.getInstance().buildTerrain("Terrain");
+		terrain = builder.buildTerrain("Terrain");
 		sceneNode.attachChild(terrain);
 		sceneNode.attachChild(builder.buildSky("Sky"));
-		//sceneNode.setLightCombineMode(Spatial.LightCombineMode.Off);
 
 		logger.info("Building entities");
 
 		ShellCollision shellCollision = new ShellCollision(entities);
-		JMENode explosionNode = new JMENode("Explosions");
+		JMENode explosionNode = nodeFactory.make("Explosions");
 		sceneNode.attachChild(explosionNode);
 		float explosionRadius = 10f;
 		JMESphere sphere = new JMESphere(null, 5, 5, explosionRadius);
@@ -81,11 +90,6 @@ public class EuclidStand extends SimpleGame {
 		ShellObserver shellObserver = new ShellObserver(entitiesToAdd, 
 				shellCollision, sceneNode, explosionNode, builder, sphere);
 		observers.add(shellObserver);
-
-		JMENode.Factory nodeFactory = new JMENode.Factory();
-		PlayerEntity.Factory playerEntityFactory = new PlayerEntity.Factory();
-		PlayerInputHandler.Factory inputHandlerFactory = new PlayerInputHandler.Factory();
-		ShellEntity.Factory shellEntityFactory = new ShellEntity.Factory();
 
 		JMENode bulletNode = nodeFactory.make("Bullets");
 		JMENode playerNode = nodeFactory.make("PlayerRelated");
@@ -97,16 +101,12 @@ public class EuclidStand extends SimpleGame {
 		PlayerInputHandler inputHandler = inputHandlerFactory.make(playerSpatial, barrelSpatial);
 		PlayerEntity player = playerEntityFactory.make(playerSpatial, barrelSpatial);
 
-		/*PlayerObserver playerObserver = PlayerObserver.getObserver(
-				entitiesToAdd, sceneNode, shellObserver, builder,
-				nodeFactory, playerEntityFactory, inputHandlerFactory, shellEntityFactory);*/
 		PlayerObserver playerObserver = new PlayerObserver(entitiesToAdd, bulletNode, playerNode, player, inputHandler, shellObserver, builder, shellEntityFactory);
 		player.addObserver(playerObserver);
 		observers.add(playerObserver);
 		entitiesToAdd.add(player);
 
-		JMENode enemyNode = new JMENode("Enemies");
-		EnemyEntity.Factory enemyFactory = new EnemyEntity.Factory();
+		JMENode enemyNode = nodeFactory.make("Enemies");
 		EnemyObserver enemyObserver = EnemyObserver.getObserver(
 				entitiesToAdd, player, builder, enemyNode, enemyFactory);
 		enemyObserver.createWave(10);
@@ -134,8 +134,8 @@ public class EuclidStand extends SimpleGame {
 		facingText.top(50);
 		sceneNode.attachChild(facingText.getSpatial());
 
-		KeyBindingManager.getKeyBindingManager().set("toggle_debug", KeyInput.KEY_U);
 		SceneMonitor.getMonitor().registerNode(rootNode, "Root Node");
+		KeyBindingManager.getKeyBindingManager().set("toggle_debug", KeyInput.KEY_U);
 		logger.info("SceneMonitor is available");
 	}
 
@@ -173,7 +173,6 @@ public class EuclidStand extends SimpleGame {
 		}
 		entitiesToAdd.clear();
 
-		LinkedList<Entity> entitiesToRemove = new LinkedList<Entity>();
 		for (Entity e : entities) {
 			e.updateTerrain(terrain);
 			e.update(interpolation);
@@ -186,6 +185,7 @@ public class EuclidStand extends SimpleGame {
 			e.remove();
 			entities.remove(e);
 		}
+		entitiesToRemove.clear();
 
 		logger.fine("Updating locations");
 		Vector3f camLoc = cam.getLocation();

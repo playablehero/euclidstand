@@ -27,6 +27,10 @@ public class JMENode {
 		node.updateRenderState();
 	}
 
+	public void attachToParent(Node parent) {
+		parent.attachChild(node);
+	}
+
 	public void attachChild(JMENode child) {
 		node.attachChild(child.getNode());
 	}
