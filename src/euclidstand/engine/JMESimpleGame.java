@@ -50,6 +50,13 @@ public class JMESimpleGame extends SimpleGame {
 		sceneNode.attachToParent(rootNode);
 	}
 
+	/**
+	 * Renames BaseGame's start method as it is final
+	 */
+	public void run() {
+		super.start();
+	}
+
 	@Override
 	protected void simpleInitGame() {
 		for (JMEGameListener listener : listeners) {

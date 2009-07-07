@@ -24,7 +24,6 @@ public class EuclidStand implements JMEGameListener {
 		this.game = game;
 	}
 
-	@Override
 	public void initGame() {
 		game.setTitle("Euclid's Last Stand");
 		builder.initialise(game.getRenderer());
@@ -33,13 +32,12 @@ public class EuclidStand implements JMEGameListener {
 		scene.create(builder, sceneNode, game.getCamera(), game.getWidth(), game.getHeight());
 	}
 
-	@Override
 	public void update(float interpolation) {
 		scene.update(interpolation);
 	}
 
-	public void start() {
-		game.start();
+	public void run() {
+		game.run();
 	}
 
 	/**
@@ -53,6 +51,6 @@ public class EuclidStand implements JMEGameListener {
 		JMESimpleGame game = new JMESimpleGame();
 		EuclidStand euclid = new EuclidStand(builder, nodeFactory, scene, game);
 		game.addListener(euclid);
-		euclid.start();
+		euclid.run();
 	}
 }
