@@ -21,7 +21,7 @@ public class ShellEntityTest {
 	public void testGetShell() {
 		float velocity = 100f;
 		JMESpatial self = mock(JMESpatial.class);
-		ShellEntity result = ShellEntity.getShell(self, 0.0f, velocity);
+		ShellEntity result = new ShellEntity.Factory().make(self, 0.0f, velocity);
 		assertEquals("Velocity does not match expected", velocity, result.getSpeed(), 0.0f);
 		assertEquals(self, result.getSelf());
 		verifyZeroInteractions(self);
@@ -35,7 +35,7 @@ public class ShellEntityTest {
 		float interpolation = 10f;
 		JMESpatial self = mock(JMESpatial.class);
 		// sets verticalVelocity to 0
-		ShellEntity instance = ShellEntity.getShell(self, 0.0f, 0.0f);
+		ShellEntity instance = new ShellEntity.Factory().make(self, 0.0f, 0.0f);
 		instance.update(interpolation);
 		verify(self).moveZAxis(anyFloat());
 		float exp = -interpolation * Constants.VERTICAL_INCREMENT;
@@ -55,7 +55,7 @@ public class ShellEntityTest {
 		JMESpatial self = mock(JMESpatial.class);
 		Observer observer = mock(Observer.class);
 		BoundingSphere sphere = mock(BoundingSphere.class);
-		ShellEntity instance = ShellEntity.getShell(self, 0.0f, 0.0f);
+		ShellEntity instance = new ShellEntity.Factory().make(self, 0.0f, 0.0f);
 		instance.addObserver(observer);
 		when(terrain.getHeightAboveTerrain(self)).thenReturn(height);
 		when(self.getWorldBound()).thenReturn(sphere);
@@ -83,7 +83,7 @@ public class ShellEntityTest {
 		JMESpatial self = mock(JMESpatial.class);
 		Observer observer = mock(Observer.class);
 		BoundingSphere sphere = mock(BoundingSphere.class);
-		ShellEntity instance = ShellEntity.getShell(self, 0.0f, 0.0f);
+		ShellEntity instance = new ShellEntity.Factory().make(self, 0.0f, 0.0f);
 		instance.addObserver(observer);
 		when(terrain.getHeightAboveTerrain(self)).thenReturn(height);
 		when(self.getWorldBound()).thenReturn(sphere);

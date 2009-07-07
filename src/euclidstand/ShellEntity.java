@@ -24,11 +24,6 @@ public class ShellEntity extends Entity {
 		this.verticalVelocity = verticalVelocity;
 	}
 
-	public static ShellEntity getShell(JMESpatial self, float angle, float velocity) {
-		float verticalVelocity = (float) Math.sin(angle) * velocity * Constants.VERTICAL_SCALE;
-		return new ShellEntity(self, velocity, verticalVelocity);
-	}
-
 	/**
 	 * Updates shell movement
 	 * @param interpolation time variable
