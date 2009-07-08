@@ -1,8 +1,13 @@
 package euclidstand.engine;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.SimplePassGame;
+import com.jme.light.PointLight;
+import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
+import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
+import com.jme.renderer.pass.BasicPassManager;
+import com.jme.renderer.pass.Pass;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,12 +15,14 @@ import java.util.List;
  *
  * @author jmtan
  */
-public class JMESimpleGame extends SimpleGame {
+public class JMESimpleGame extends SimplePassGame {
 
 	protected final List<JMEGameListener> listeners;
 
 	public JMESimpleGame() {
 		listeners = new LinkedList<JMEGameListener>();
+		pManager = new BasicPassManager();
+		stencilBits = 4;
 	}
 
 	public void addListener(JMEGameListener listener) {
@@ -50,6 +57,10 @@ public class JMESimpleGame extends SimpleGame {
 		sceneNode.attachToParent(rootNode);
 	}
 
+	public void addRenderPass(Pass pass) {
+		pManager.add(pass);
+	}
+
 	/**
 	 * Renames BaseGame's start method as it is final
 	 */
@@ -59,6 +70,18 @@ public class JMESimpleGame extends SimpleGame {
 
 	@Override
 	protected void simpleInitGame() {
+		PointLight pl = new PointLight();
+		pl.setEnabled(true);
+		pl.setDiffuse(new ColorRGBA(.7f, .7f, .7f, 1.0f));
+		pl.setAmbient(new ColorRGBA(.25f, .25f, .25f, .25f));
+		pl.setLocation(new Vector3f(0, 500, 0));
+		pl.setShadowCaster(true);
+
+		lightState.detachAll();
+		lightState.attach(pl);
+		lightState.setGlobalAmbient(new ColorRGBA(1f, 1f, 1f, 1.0f));
+
+		rootNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
 		for (JMEGameListener listener : listeners) {
 			listener.initGame();
 		}

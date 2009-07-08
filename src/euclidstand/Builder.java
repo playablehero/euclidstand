@@ -220,7 +220,6 @@ public class Builder {
 	 * @return the shell model
 	 */
 	public JMESpatial buildShell(String name, JMESpatial barrel) {
-		// TODO: Shell does not align properly with barrel at different angles
 		logger.fine("Building shell");
 		Vector3f translation = new Vector3f(barrel.getWorldTranslation());
 		Quaternion rotation = new Quaternion(barrel.getWorldRotation());

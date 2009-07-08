@@ -3,6 +3,7 @@ package euclidstand;
 import com.jme.renderer.Camera;
 import euclidstand.engine.JMEChaseCamera;
 import euclidstand.engine.JMENode;
+import euclidstand.engine.JMEShadowedRenderPass;
 import euclidstand.engine.JMESpatial;
 import euclidstand.engine.JMESphere;
 import euclidstand.engine.JMETerrain;
@@ -17,7 +18,7 @@ import java.util.logging.Logger;
 public class GameScene {
 
 	private static final Logger logger =
-			Logger.getLogger(EuclidStand.class.getName());
+			Logger.getLogger(GameScene.class.getName());
 	private final List<Entity> entities;
 	private final List<Entity> entitiesToAdd;
 	private final List<EntityObserver> observers;
@@ -49,7 +50,7 @@ public class GameScene {
 		enemyFactory = new EnemyEntity.Factory();
 	}
 
-	public void create(Builder builder, JMENode sceneNode, Camera cam, int width, int height) {
+	public void create(Builder builder, JMENode sceneNode, JMEShadowedRenderPass sPass, Camera cam, int width, int height) {
 		this.sceneNode = sceneNode;
 
 		logger.info("Building world");
@@ -71,6 +72,7 @@ public class GameScene {
 
 		JMENode bulletNode = nodeFactory.make("Bullets");
 		JMENode playerNode = nodeFactory.make("PlayerRelated");
+		sPass.addSpatialToOcclude(sceneNode);
 		sceneNode.attachChild(playerNode);
 		playerNode.attachChild(bulletNode);
 		playerNode.attachChild(builder.buildPlayer("Player", "Barrel"));

@@ -2,6 +2,7 @@ package euclidstand;
 
 import euclidstand.engine.JMEGameListener;
 import euclidstand.engine.JMENode;
+import euclidstand.engine.JMEShadowedRenderPass;
 import euclidstand.engine.JMESimpleGame;
 
 /**
@@ -13,13 +14,19 @@ public class EuclidStand implements JMEGameListener {
 	private final JMENode.Factory nodeFactory;
 	private final GameScene scene;
 	private final JMESimpleGame game;
+	private final JMEShadowedRenderPass renderPass;
 
 	/**
 	 * Game constructor
 	 */
-	public EuclidStand(Builder builder, JMENode.Factory nodeFactory, GameScene scene, JMESimpleGame game) {
+	public EuclidStand(Builder builder, 
+			JMENode.Factory nodeFactory,
+			JMEShadowedRenderPass renderPass,
+			GameScene scene,
+			JMESimpleGame game) {
 		this.builder = builder;
 		this.nodeFactory = nodeFactory;
+		this.renderPass = renderPass;
 		this.scene = scene;
 		this.game = game;
 	}
@@ -29,7 +36,9 @@ public class EuclidStand implements JMEGameListener {
 		builder.initialise(game.getRenderer());
 		JMENode sceneNode = nodeFactory.make("Game Scene");
 		game.attachScene(sceneNode);
-		scene.create(builder, sceneNode, game.getCamera(), game.getWidth(), game.getHeight());
+		renderPass.addSpatialToRender(sceneNode);
+		game.addRenderPass(renderPass);
+		scene.create(builder, sceneNode, renderPass, game.getCamera(), game.getWidth(), game.getHeight());
 	}
 
 	public void update(float interpolation) {
@@ -49,7 +58,8 @@ public class EuclidStand implements JMEGameListener {
 		JMENode.Factory nodeFactory = new JMENode.Factory();
 		GameScene scene = new GameScene();
 		JMESimpleGame game = new JMESimpleGame();
-		EuclidStand euclid = new EuclidStand(builder, nodeFactory, scene, game);
+		JMEShadowedRenderPass renderPass = new JMEShadowedRenderPass();
+		EuclidStand euclid = new EuclidStand(builder, nodeFactory, renderPass, scene, game);
 		game.addListener(euclid);
 		euclid.run();
 	}
