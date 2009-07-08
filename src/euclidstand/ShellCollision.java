@@ -42,6 +42,7 @@ public class ShellCollision extends BoundingCollisionResults {
 	}
 
 	public static class Factory {
+
 		public ShellCollision make(List<Entity> entities) {
 			return new ShellCollision(entities);
 		}

@@ -24,22 +24,6 @@ public class Text2D {
 	}
 
 	/**
-	 * Factory method for Text2D
-	 * @param name of the text instance
-	 * @param text contents of the text instance
-	 * @return Text2D instance
-	 */
-	public static Text2D getText2D(String name, String text, int screenWidth, int screenHeight) {
-		JMEText textSpatial = new JMEText();
-		textSpatial.setName(name);
-		textSpatial.print(text);
-		textSpatial.setDefaultCulling();
-		textSpatial.setDefaultTexture();
-		textSpatial.setDefaultFontBlend();
-		return new Text2D(textSpatial, screenWidth, screenHeight);
-	}
-
-	/**
 	 * Position text
 	 * @param pixels from left edge of screen
 	 */
@@ -99,5 +83,24 @@ public class Text2D {
 	 */
 	public Spatial getSpatial() {
 		return textSpatial;
+	}
+
+	public static class Factory {
+
+		/**
+		 * Factory method for Text2D
+		 * @param name of the text instance
+		 * @param text contents of the text instance
+		 * @return Text2D instance
+		 */
+		public Text2D make(String name, String text, int screenWidth, int screenHeight) {
+			JMEText textSpatial = new JMEText();
+			textSpatial.setName(name);
+			textSpatial.print(text);
+			textSpatial.setDefaultCulling();
+			textSpatial.setDefaultTexture();
+			textSpatial.setDefaultFontBlend();
+			return new Text2D(textSpatial, screenWidth, screenHeight);
+		}
 	}
 }

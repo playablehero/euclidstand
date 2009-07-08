@@ -28,12 +28,12 @@ public class GameScene {
 	private final PlayerInputHandler.Factory inputHandlerFactory;
 	private final ShellEntity.Factory shellEntityFactory;
 	private final EnemyEntity.Factory enemyFactory;
+	private final GameSceneUI.Factory uiFactory;
+	private final ShellCollision.Factory shellCollisionFactory;
 	private JMENode sceneNode;
 	private JMETerrain terrain;
 	private JMEChaseCamera chasecam;
-	private Text2D angleText = null;
-	private Text2D velocityText = null;
-	private Text2D facingText = null;
+	private GameSceneUI ui;
 
 	/**
 	 * Game constructor
@@ -48,6 +48,8 @@ public class GameScene {
 		inputHandlerFactory = new PlayerInputHandler.Factory();
 		shellEntityFactory = new ShellEntity.Factory();
 		enemyFactory = new EnemyEntity.Factory();
+		uiFactory = new GameSceneUI.Factory(new Text2D.Factory());
+		shellCollisionFactory = new ShellCollision.Factory();
 	}
 
 	public void create(Builder builder, JMENode sceneNode, JMEShadowedRenderPass sPass, Camera cam, int width, int height) {
@@ -60,7 +62,7 @@ public class GameScene {
 
 		logger.info("Building entities");
 
-		ShellCollision shellCollision = new ShellCollision(entities);
+		ShellCollision shellCollision = shellCollisionFactory.make(entities);
 		JMENode explosionNode = nodeFactory.make("Explosions");
 		sceneNode.attachChild(explosionNode);
 		float explosionRadius = 10f;
@@ -104,15 +106,9 @@ public class GameScene {
 		chasecam.setRotateTarget(false);
 
 		logger.info("Creating GUI");
-		angleText = Text2D.getText2D("Angle", "", width, height);
-		angleText.top(10);
-		sceneNode.attachChild(angleText.getSpatial());
-		velocityText = Text2D.getText2D("Velocity", "", width, height);
-		velocityText.top(30);
-		sceneNode.attachChild(velocityText.getSpatial());
-		facingText = Text2D.getText2D("Facing", "", width, height);
-		facingText.top(50);
-		sceneNode.attachChild(facingText.getSpatial());
+		JMENode uiNode = nodeFactory.make("UI");
+		sceneNode.attachChild(uiNode);
+		ui = uiFactory.make(uiNode, width, height);
 	}
 
 	/**
@@ -157,9 +153,7 @@ public class GameScene {
 
 		logger.fine("Updating GUI");
 		PlayerEntity player = getPlayerObserver().getPlayer();
-		angleText.setText("Angle: " + player.getFiringAngle());
-		velocityText.setText("Velocity: " + player.getVelocity());
-		facingText.setText("Facing: " + player.getFacing());
+		ui.update(player);
 		getPlayerObserver().updateInput(interpolation);
 	}
 
