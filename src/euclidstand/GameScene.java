@@ -72,7 +72,8 @@ public class GameScene {
 
 		JMENode bulletNode = nodeFactory.make("Bullets");
 		JMENode playerNode = nodeFactory.make("PlayerRelated");
-		sPass.addSpatialToOcclude(sceneNode);
+		sPass.addSpatialToOcclude(bulletNode);
+		sPass.addSpatialToOcclude(playerNode);
 		sceneNode.attachChild(playerNode);
 		playerNode.attachChild(bulletNode);
 		playerNode.attachChild(builder.buildPlayer("Player", "Barrel"));
@@ -87,6 +88,7 @@ public class GameScene {
 		entitiesToAdd.add(player);
 
 		JMENode enemyNode = nodeFactory.make("Enemies");
+		sPass.addSpatialToOcclude(enemyNode);
 		EnemyObserver enemyObserver = EnemyObserver.getObserver(
 				entitiesToAdd, player, builder, enemyNode, enemyFactory);
 		enemyObserver.createWave(10);
