@@ -1,5 +1,6 @@
 package euclidstand;
 
+import com.google.inject.Inject;
 import euclidstand.engine.JMENode;
 
 /**
@@ -28,6 +29,7 @@ public class GameSceneUI {
 
 		private final Text2D.Factory textFactory;
 
+		@Inject
 		public Factory(Text2D.Factory textFactory) {
 			this.textFactory = textFactory;
 		}

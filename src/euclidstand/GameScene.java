@@ -1,11 +1,12 @@
 package euclidstand;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.jme.renderer.Camera;
 import euclidstand.engine.JMEChaseCamera;
 import euclidstand.engine.JMENode;
 import euclidstand.engine.JMEShadowedRenderPass;
 import euclidstand.engine.JMETerrain;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -21,73 +22,20 @@ public class GameScene {
 	private final List<Entity> entitiesToAdd;
 	private final List<EntityObserver> observers;
 	private final List<Entity> entitiesToRemove;
-	private final JMENode.Factory nodeFactory;
-	private final PlayerEntity.Factory playerEntityFactory;
-	private final PlayerInputHandler.Factory inputHandlerFactory;
-	private final ShellEntity.Factory shellEntityFactory;
-	private final EnemyEntity.Factory enemyFactory;
-	private final GameSceneUI.Factory uiFactory;
-	private final ShellCollision.Factory shellCollisionFactory;
-	private final ShellObserver.Factory shellObserverFactory;
-	private final PlayerObserver.Factory playerObserverFactory;
-	private final EnemyObserver.Factory enemyObserverFactory;
-	private JMENode sceneNode;
-	private JMETerrain terrain;
-	private JMEChaseCamera chasecam;
-	private GameSceneUI ui;
+	private final JMENode sceneNode;
+	private final JMETerrain terrain;
+	private final JMEChaseCamera chasecam;
+	private final GameSceneUI ui;
 
-	/**
-	 * Game constructor
-	 */
-	public GameScene() {
-		entities = new LinkedList<Entity>();
-		entitiesToAdd = new LinkedList<Entity>();
-		observers = new LinkedList<EntityObserver>();
-		entitiesToRemove = new LinkedList<Entity>();
-		nodeFactory = new JMENode.Factory();
-		playerEntityFactory = new PlayerEntity.Factory();
-		inputHandlerFactory = new PlayerInputHandler.Factory();
-		shellEntityFactory = new ShellEntity.Factory();
-		enemyFactory = new EnemyEntity.Factory();
-		uiFactory = new GameSceneUI.Factory(new Text2D.Factory());
-		shellCollisionFactory = new ShellCollision.Factory();
-		shellObserverFactory = new ShellObserver.Factory(nodeFactory);
-		playerObserverFactory = new PlayerObserver.Factory(nodeFactory, inputHandlerFactory, playerEntityFactory, shellEntityFactory);
-		enemyObserverFactory = new EnemyObserver.Factory(enemyFactory, nodeFactory);
-	}
-
-	public void create(Builder builder, JMENode sceneNode, JMEShadowedRenderPass sPass, Camera cam, int width, int height) {
+	public GameScene(List<Entity> entities, List<Entity> entitiesToAdd, List<EntityObserver> observers, List<Entity> entitiesToRemove, JMENode sceneNode, JMETerrain terrain, JMEChaseCamera chasecam, GameSceneUI ui) {
+		this.entities = entities;
+		this.entitiesToAdd = entitiesToAdd;
+		this.observers = observers;
+		this.entitiesToRemove = entitiesToRemove;
 		this.sceneNode = sceneNode;
-
-		logger.info("Building world");
-		terrain = builder.buildTerrain("Terrain");
-		sceneNode.attachChild(terrain);
-		sceneNode.attachChild(builder.buildSky("Sky"));
-
-		logger.info("Building entities");
-
-		ShellCollision shellCollision = shellCollisionFactory.make(entities);
-		ShellObserver shellObserver = shellObserverFactory.make(builder, sceneNode, shellCollision, entitiesToAdd);
-		PlayerObserver playerObserver = playerObserverFactory.make(builder, sPass, sceneNode, shellObserver, entitiesToAdd);
-		PlayerEntity player = playerObserver.getPlayer();
-		EnemyObserver enemyObserver = enemyObserverFactory.make(sPass, entitiesToAdd, player, builder, sceneNode);
-
-		observers.add(shellObserver);
-		observers.add(playerObserver);
-		observers.add(enemyObserver);
-
-		logger.info("Initialising camera");
-
-		chasecam = new JMEChaseCamera(cam, player.getSelf());
-		chasecam.setEnableSpring(false);
-		chasecam.setMouseXMultiplier(0.5f);
-		chasecam.setMouseYMultiplier(0.1f);
-		chasecam.setRotateTarget(false);
-
-		logger.info("Creating GUI");
-		JMENode uiNode = nodeFactory.make("UI");
-		sceneNode.attachChild(uiNode);
-		ui = uiFactory.make(uiNode, width, height);
+		this.terrain = terrain;
+		this.chasecam = chasecam;
+		this.ui = ui;
 	}
 
 	/**
@@ -139,9 +87,71 @@ public class GameScene {
 	private PlayerObserver getPlayerObserver() {
 		for (EntityObserver o : observers) {
 			if (o instanceof PlayerObserver) {
-				return (PlayerObserver)o;
+				return (PlayerObserver) o;
 			}
 		}
 		return null;
+	}
+
+	public static class Factory {
+
+		private final Provider<List<Entity>> entityListFactory;
+		private final Provider<List<EntityObserver>> observerListFactory;
+		private final JMENode.Factory nodeFactory;
+		private final GameSceneUI.Factory uiFactory;
+		private final ShellCollision.Factory shellCollisionFactory;
+		private final ShellObserver.Factory shellObserverFactory;
+		private final PlayerObserver.Factory playerObserverFactory;
+		private final EnemyObserver.Factory enemyObserverFactory;
+
+		@Inject
+		public Factory(Provider<List<Entity>> entityListFactory, Provider<List<EntityObserver>> observerListFactory, JMENode.Factory nodeFactory, GameSceneUI.Factory uiFactory, ShellCollision.Factory shellCollisionFactory, ShellObserver.Factory shellObserverFactory, PlayerObserver.Factory playerObserverFactory, EnemyObserver.Factory enemyObserverFactory) {
+			this.entityListFactory = entityListFactory;
+			this.observerListFactory = observerListFactory;
+			this.nodeFactory = nodeFactory;
+			this.uiFactory = uiFactory;
+			this.shellCollisionFactory = shellCollisionFactory;
+			this.shellObserverFactory = shellObserverFactory;
+			this.playerObserverFactory = playerObserverFactory;
+			this.enemyObserverFactory = enemyObserverFactory;
+		}
+
+		public GameScene make(Builder builder, JMENode sceneNode, JMEShadowedRenderPass sPass, Camera cam, int width, int height) {
+			List<Entity> entities = entityListFactory.get();
+			List<Entity> entitiesToAdd = entityListFactory.get();
+			List<Entity> entitiesToRemove = entityListFactory.get();
+			List<EntityObserver> observers = observerListFactory.get();
+
+			logger.info("Building world");
+			JMETerrain terrain = builder.buildTerrain("Terrain");
+			sceneNode.attachChild(terrain);
+			sceneNode.attachChild(builder.buildSky("Sky"));
+
+			logger.info("Building entities");
+
+			ShellCollision shellCollision = shellCollisionFactory.make(entities);
+			ShellObserver shellObserver = shellObserverFactory.make(builder, sceneNode, shellCollision, entitiesToAdd);
+			PlayerObserver playerObserver = playerObserverFactory.make(builder, sPass, sceneNode, shellObserver, entitiesToAdd);
+			PlayerEntity player = playerObserver.getPlayer();
+			EnemyObserver enemyObserver = enemyObserverFactory.make(sPass, entitiesToAdd, player, builder, sceneNode);
+
+			observers.add(shellObserver);
+			observers.add(playerObserver);
+			observers.add(enemyObserver);
+
+			logger.info("Initialising camera");
+
+			JMEChaseCamera chasecam = new JMEChaseCamera(cam, player.getSelf());
+			chasecam.setEnableSpring(false);
+			chasecam.setMouseXMultiplier(0.5f);
+			chasecam.setMouseYMultiplier(0.1f);
+			chasecam.setRotateTarget(false);
+
+			logger.info("Creating GUI");
+			JMENode uiNode = nodeFactory.make("UI");
+			sceneNode.attachChild(uiNode);
+			GameSceneUI ui = uiFactory.make(uiNode, width, height);
+			return new GameScene(entities, entitiesToAdd, observers, entitiesToRemove, sceneNode, terrain, chasecam, ui);
+		}
 	}
 }

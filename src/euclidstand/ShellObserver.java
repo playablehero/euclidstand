@@ -1,5 +1,6 @@
 package euclidstand;
 
+import com.google.inject.Inject;
 import com.jmex.effects.particles.ParticleMesh;
 import euclidstand.engine.JMENode;
 import euclidstand.engine.JMESphere;
@@ -49,8 +50,10 @@ public class ShellObserver extends EntityObserver implements Observer {
 	}
 
 	public static class Factory {
+
 		private final JMENode.Factory nodeFactory;
 
+		@Inject
 		public Factory(JMENode.Factory nodeFactory) {
 			this.nodeFactory = nodeFactory;
 		}

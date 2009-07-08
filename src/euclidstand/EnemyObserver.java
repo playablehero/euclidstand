@@ -1,5 +1,6 @@
 package euclidstand;
 
+import com.google.inject.Inject;
 import java.util.Observer;
 import java.util.Observable;
 import java.util.List;
@@ -73,6 +74,7 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 		private final EnemyEntity.Factory enemyFactory;
 		private final JMENode.Factory nodeFactory;
 
+		@Inject
 		public Factory(EnemyEntity.Factory enemyFactory, JMENode.Factory nodeFactory) {
 			this.enemyFactory = enemyFactory;
 			this.nodeFactory = nodeFactory;
