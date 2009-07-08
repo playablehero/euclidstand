@@ -1,10 +1,11 @@
 <?xml version="1.0" ?>
 <project name="EuclidsLastStand" default="build">
 	<property name="dir.src" value="src" />
+	<property name="dir.test" value="test" />
 	<property name="dir.build" value="bin" />
 	<property name="dir.lib" value="lib" />
-	<property name="dir.debug" value="${dir.lib}/debug" />
-	<property name="lib" value="lib/jME_2.0.jar;lib/lwjgl.jar;lib/lwjgl_util.jar" />
+	<property name="lib.debug" value="${dir.lib}/debug" />
+	<property name="lib.test" value="${dir.lib}/test" />
 	<property name="main" value="euclidstand.EuclidStand" />
 	
 	<path id="classpath">
@@ -13,7 +14,14 @@
 		<fileset dir="${dir.lib}">
 			<include name="*.jar" />
 		</fileset>
-		<fileset dir="${dir.debug}">
+		<fileset dir="${lib.debug}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<path id="test.classpath">
+		<path refid="classpath" />
+		<fileset dir="${lib.test}">
 			<include name="*.jar" />
 		</fileset>
 	</path>
@@ -32,11 +40,30 @@
 		</javac>
 	</target>
 	
+	<target name="build_test" depends="build">
+		<javac srcdir="${dir.test}" destdir="${dir.build}">
+			<classpath refid="test.classpath" />
+		</javac>
+	</target>
+	
 	<target name="run" depends="build">
 		<java fork="yes" spawn="no" classname="${main}">
 			<classpath refid="classpath" />
 			<jvmarg value="-Djava.library.path=lib/natives" />
 		</java>
 	</target>
+
+	<target name="test" depends="build_test">
+		<junit fork="yes" printsummary="yes" haltonerror="yes">
+			<formatter type="brief" usefile="false" />
+			<classpath refid="test.classpath" />
+			<batchtest>
+				<fileset dir="${dir.build}">
+					<include name="**/*Test.class"/>
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
 </project>
 
