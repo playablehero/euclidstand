@@ -47,4 +47,21 @@ public class ShellObserver extends EntityObserver implements Observer {
 		explosion.updateRenderState();
 		explosion.forceRespawn();
 	}
+
+	public static class Factory {
+		private final JMENode.Factory nodeFactory;
+
+		public Factory(JMENode.Factory nodeFactory) {
+			this.nodeFactory = nodeFactory;
+		}
+
+		public ShellObserver make(Builder builder, JMENode sceneNode, ShellCollision shellCollision, List<Entity> entitiesToAdd) {
+			JMENode explosionNode = nodeFactory.make("Explosions");
+			sceneNode.attachChild(explosionNode);
+			float explosionRadius = 10f;
+			JMESphere sphere = new JMESphere(null, 5, 5, explosionRadius);
+			sphere.setBoundsToSphere();
+			return new ShellObserver(entitiesToAdd, shellCollision, sceneNode, explosionNode, builder, sphere);
+		}
+	}
 }

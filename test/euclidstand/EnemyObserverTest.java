@@ -33,7 +33,7 @@ public class EnemyObserverTest {
 		when(enemyFactory.make(enemySpatial, target)).thenReturn(enemyEntity);
 		when(enemyEntity.getSelf()).thenReturn(enemySpatial);
 
-		EnemyObserver instance = EnemyObserver.getObserver(entitiesToAdd, target, builder, enemyNode, enemyFactory);
+		EnemyObserver instance = new EnemyObserver(entitiesToAdd, target, enemyNode, builder, enemyFactory);
 		instance.createWave(number);
 
 		assertEquals("Parameter entitiesToAdd does not match instance", entitiesToAdd, instance.entitiesToAdd);
@@ -68,7 +68,7 @@ public class EnemyObserverTest {
 		when(enemyEntity.getName()).thenReturn(entityName);
 		when(builder.buildSmallExplosion(anyString(), eq(enemySpatial))).thenReturn(explosion);
 
-		EnemyObserver instance = EnemyObserver.getObserver(entitiesToAdd, target, builder, enemyNode, enemyFactory);
+		EnemyObserver instance = new EnemyObserver(entitiesToAdd, target, enemyNode, builder, enemyFactory);
 		instance.update(enemyEntity, null);
 
 		verify(builder, atLeastOnce()).buildBaddie(anyString());

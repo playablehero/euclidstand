@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import com.jmex.effects.particles.ParticleMesh;
 import euclidstand.engine.JMENode;
+import euclidstand.engine.JMEShadowedRenderPass;
 
 // TODO: Initialise bad guy attributes (appearance, speed, damage)
 /**
@@ -24,7 +25,7 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 	private int createdBaddies = 0;
 	private int currentBaddies = 0;
 
-	private EnemyObserver(List<Entity> entitiesToAdd,
+	public EnemyObserver(List<Entity> entitiesToAdd,
 			Entity target,
 			JMENode enemyNode,
 			Builder builder,
@@ -34,27 +35,6 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 		this.enemyNode = enemyNode;
 		this.builder = builder;
 		this.enemyFactory = enemyFactory;
-	}
-
-	/**
-	 * Factory method for EnemyObserver.
-	 *
-	 * Creates an initial wave of enemies
-	 * @param entitiesToAdd the list of entitiesToAdd
-	 * @param renderer current renderer
-	 * @param target for new enemies
-	 * @param sceneNode for current scene
-	 * @return an instance of EnemyObserver
-	 */
-	public static EnemyObserver getObserver(
-			List<Entity> entitiesToAdd,
-			Entity target,
-			Builder builder,
-			JMENode enemyNode,
-			EnemyEntity.Factory enemyFactory) {
-		EnemyObserver observer =
-				new EnemyObserver(entitiesToAdd, target, enemyNode, builder, enemyFactory);
-		return observer;
 	}
 
 	public void createWave(int number) {
@@ -85,6 +65,42 @@ public final class EnemyObserver extends EntityObserver implements Observer {
 		currentBaddies -= 1;
 		if (currentBaddies <= 0) {
 			createWave(10);
+		}
+	}
+
+	public static class Factory {
+
+		private final EnemyEntity.Factory enemyFactory;
+		private final JMENode.Factory nodeFactory;
+
+		public Factory(EnemyEntity.Factory enemyFactory, JMENode.Factory nodeFactory) {
+			this.enemyFactory = enemyFactory;
+			this.nodeFactory = nodeFactory;
+		}
+
+		/**
+		 * Factory method for EnemyObserver.
+		 *
+		 * Creates an initial wave of enemies
+		 * @param entitiesToAdd the list of entitiesToAdd
+		 * @param renderer current renderer
+		 * @param target for new enemies
+		 * @param sceneNode for current scene
+		 * @return an instance of EnemyObserver
+		 */
+		public EnemyObserver make(
+				JMEShadowedRenderPass sPass,
+				List<Entity> entitiesToAdd,
+				Entity target,
+				Builder builder,
+				JMENode sceneNode) {
+			JMENode enemyNode = nodeFactory.make("Enemies");
+			sPass.addSpatialToOcclude(enemyNode);
+			EnemyObserver observer =
+					new EnemyObserver(entitiesToAdd, target, enemyNode, builder, enemyFactory);
+			observer.createWave(10);
+			sceneNode.attachChild(enemyNode);
+			return observer;
 		}
 	}
 }

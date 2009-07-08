@@ -4,8 +4,6 @@ import com.jme.renderer.Camera;
 import euclidstand.engine.JMEChaseCamera;
 import euclidstand.engine.JMENode;
 import euclidstand.engine.JMEShadowedRenderPass;
-import euclidstand.engine.JMESpatial;
-import euclidstand.engine.JMESphere;
 import euclidstand.engine.JMETerrain;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,6 +28,9 @@ public class GameScene {
 	private final EnemyEntity.Factory enemyFactory;
 	private final GameSceneUI.Factory uiFactory;
 	private final ShellCollision.Factory shellCollisionFactory;
+	private final ShellObserver.Factory shellObserverFactory;
+	private final PlayerObserver.Factory playerObserverFactory;
+	private final EnemyObserver.Factory enemyObserverFactory;
 	private JMENode sceneNode;
 	private JMETerrain terrain;
 	private JMEChaseCamera chasecam;
@@ -50,6 +51,9 @@ public class GameScene {
 		enemyFactory = new EnemyEntity.Factory();
 		uiFactory = new GameSceneUI.Factory(new Text2D.Factory());
 		shellCollisionFactory = new ShellCollision.Factory();
+		shellObserverFactory = new ShellObserver.Factory(nodeFactory);
+		playerObserverFactory = new PlayerObserver.Factory(nodeFactory, inputHandlerFactory, playerEntityFactory, shellEntityFactory);
+		enemyObserverFactory = new EnemyObserver.Factory(enemyFactory, nodeFactory);
 	}
 
 	public void create(Builder builder, JMENode sceneNode, JMEShadowedRenderPass sPass, Camera cam, int width, int height) {
@@ -63,38 +67,13 @@ public class GameScene {
 		logger.info("Building entities");
 
 		ShellCollision shellCollision = shellCollisionFactory.make(entities);
-		JMENode explosionNode = nodeFactory.make("Explosions");
-		sceneNode.attachChild(explosionNode);
-		float explosionRadius = 10f;
-		JMESphere sphere = new JMESphere(null, 5, 5, explosionRadius);
-		sphere.setBoundsToSphere();
-		ShellObserver shellObserver = new ShellObserver(entitiesToAdd,
-				shellCollision, sceneNode, explosionNode, builder, sphere);
+		ShellObserver shellObserver = shellObserverFactory.make(builder, sceneNode, shellCollision, entitiesToAdd);
+		PlayerObserver playerObserver = playerObserverFactory.make(builder, sPass, sceneNode, shellObserver, entitiesToAdd);
+		PlayerEntity player = playerObserver.getPlayer();
+		EnemyObserver enemyObserver = enemyObserverFactory.make(sPass, entitiesToAdd, player, builder, sceneNode);
+
 		observers.add(shellObserver);
-
-		JMENode bulletNode = nodeFactory.make("Bullets");
-		JMENode playerNode = nodeFactory.make("PlayerRelated");
-		sPass.addSpatialToOcclude(bulletNode);
-		sPass.addSpatialToOcclude(playerNode);
-		sceneNode.attachChild(playerNode);
-		playerNode.attachChild(bulletNode);
-		playerNode.attachChild(builder.buildPlayer("Player", "Barrel"));
-		JMESpatial playerSpatial = playerNode.getChild("Player");
-		JMESpatial barrelSpatial = playerNode.getChild("Barrel");
-		PlayerInputHandler inputHandler = inputHandlerFactory.make(playerSpatial, barrelSpatial);
-		PlayerEntity player = playerEntityFactory.make(playerSpatial, barrelSpatial);
-
-		PlayerObserver playerObserver = new PlayerObserver(entitiesToAdd, bulletNode, playerNode, player, inputHandler, shellObserver, builder, shellEntityFactory);
-		player.addObserver(playerObserver);
 		observers.add(playerObserver);
-		entitiesToAdd.add(player);
-
-		JMENode enemyNode = nodeFactory.make("Enemies");
-		sPass.addSpatialToOcclude(enemyNode);
-		EnemyObserver enemyObserver = EnemyObserver.getObserver(
-				entitiesToAdd, player, builder, enemyNode, enemyFactory);
-		enemyObserver.createWave(10);
-		sceneNode.attachChild(enemyNode);
 		observers.add(enemyObserver);
 
 		logger.info("Initialising camera");
