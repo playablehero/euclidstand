@@ -103,9 +103,10 @@ public class GameScene {
 		private final ShellObserver.Factory shellObserverFactory;
 		private final PlayerObserver.Factory playerObserverFactory;
 		private final EnemyObserver.Factory enemyObserverFactory;
+		private final JMEChaseCamera.Factory cameraFactory;
 
 		@Inject
-		public Factory(Provider<List<Entity>> entityListFactory, Provider<List<EntityObserver>> observerListFactory, JMENode.Factory nodeFactory, GameSceneUI.Factory uiFactory, ShellCollision.Factory shellCollisionFactory, ShellObserver.Factory shellObserverFactory, PlayerObserver.Factory playerObserverFactory, EnemyObserver.Factory enemyObserverFactory) {
+		public Factory(Provider<List<Entity>> entityListFactory, Provider<List<EntityObserver>> observerListFactory, JMENode.Factory nodeFactory, GameSceneUI.Factory uiFactory, ShellCollision.Factory shellCollisionFactory, ShellObserver.Factory shellObserverFactory, PlayerObserver.Factory playerObserverFactory, EnemyObserver.Factory enemyObserverFactory, JMEChaseCamera.Factory cameraFactory) {
 			this.entityListFactory = entityListFactory;
 			this.observerListFactory = observerListFactory;
 			this.nodeFactory = nodeFactory;
@@ -114,6 +115,7 @@ public class GameScene {
 			this.shellObserverFactory = shellObserverFactory;
 			this.playerObserverFactory = playerObserverFactory;
 			this.enemyObserverFactory = enemyObserverFactory;
+			this.cameraFactory = cameraFactory;
 		}
 
 		public GameScene make(Builder builder, JMENode sceneNode, JMEShadowedRenderPass sPass, Camera cam, int width, int height) {
@@ -141,7 +143,7 @@ public class GameScene {
 
 			logger.info("Initialising camera");
 
-			JMEChaseCamera chasecam = new JMEChaseCamera(cam, player.getSelf());
+			JMEChaseCamera chasecam = cameraFactory.make(cam, player.getSelf());
 			chasecam.setEnableSpring(false);
 			chasecam.setMouseXMultiplier(0.5f);
 			chasecam.setMouseYMultiplier(0.1f);

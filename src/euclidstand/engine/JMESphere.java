@@ -30,4 +30,13 @@ public class JMESphere extends Sphere {
 		updateGeometry(spatial.getWorldTranslation(), getZSamples(), getRadialSamples(), getRadius());
 		updateModelBound();
 	}
+
+	public static class Factory {
+		public JMESphere make(String name, int zSamples, int radialSamples, float radius) {
+			return new JMESphere(name, zSamples, radialSamples, radius);
+		}
+		public JMESphere make(String name, JMESpatial spatial, int zSamples, int radialSamples, float radius) {
+			return new JMESphere(name, spatial, zSamples, radialSamples, radius);
+		}
+	}
 }

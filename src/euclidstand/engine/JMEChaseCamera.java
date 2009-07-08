@@ -37,4 +37,10 @@ public class JMEChaseCamera extends ChaseCamera {
 			cam.update();
 		}
 	}
+
+	public static class Factory {
+		public JMEChaseCamera make(Camera cam, JMESpatial target) {
+			return new JMEChaseCamera(cam, target);
+		}
+	}
 }
