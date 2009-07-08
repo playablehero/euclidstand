@@ -22,6 +22,7 @@ import com.jme.util.export.binary.BinaryImporter;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.shape.Sphere;
+import com.jme.scene.state.ZBufferState;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jme.util.resource.SimpleResourceLocator;
 import com.jmex.effects.particles.ParticleControllerListener;
@@ -262,6 +263,11 @@ public class Builder {
 			mesh.setName(name);
 			mesh.setLocalTranslation(victim.getWorldTranslation());
 			mesh.setModelBound(new BoundingBox());
+			ZBufferState zs = renderer.createZBufferState();
+			zs.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
+			zs.setWritable(false);
+			mesh.setRenderState(zs);
+			mesh.updateRenderState();
 			mesh.getParticleController().addListener(new ParticleControllerListener() {
 
 				public void onDead(ParticleSystem particles) {
