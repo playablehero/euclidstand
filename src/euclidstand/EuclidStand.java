@@ -22,7 +22,7 @@ public class EuclidStand implements JMEGameListener {
 	private final GameScene.Factory sceneFactory;
 	private final JMESimpleGame game;
 	private final JMEShadowedRenderPass renderPass;
-	private GameScene scene;
+	protected GameScene scene;
 
 	/**
 	 * Game constructor

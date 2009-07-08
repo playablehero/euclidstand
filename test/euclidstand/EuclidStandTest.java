@@ -7,6 +7,7 @@ import euclidstand.engine.JMENode;
 import euclidstand.engine.JMEShadowedRenderPass;
 import euclidstand.engine.JMESimpleGame;
 import org.junit.Test;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -24,10 +25,11 @@ public class EuclidStandTest {
 		int height = 600;
 		Builder builder = mock(Builder.class);
 		JMENode.Factory nodeFactory = mock(JMENode.Factory.class);
+		GameScene.Factory sceneFactory = mock(GameScene.Factory.class);
 		GameScene scene = mock(GameScene.class);
 		JMESimpleGame game = mock(JMESimpleGame.class);
 		JMEShadowedRenderPass renderPass = mock(JMEShadowedRenderPass.class);
-		EuclidStand instance = new EuclidStand(builder, nodeFactory, renderPass, scene, game);
+		EuclidStand instance = new EuclidStand(builder, nodeFactory, sceneFactory, renderPass, game);
 		Renderer renderer = mock(Renderer.class);
 		JMENode node = mock(JMENode.class);
 		Camera cam = mock(Camera.class);
@@ -36,8 +38,11 @@ public class EuclidStandTest {
 		when(game.getCamera()).thenReturn(cam);
 		when(game.getWidth()).thenReturn(width);
 		when(game.getHeight()).thenReturn(height);
+		when(sceneFactory.make(builder, node, renderPass, cam, width, height)).thenReturn(scene);
 
 		instance.initGame();
+
+		assertEquals("Scene member is not as expected", scene, instance.scene);
 		verify(game).setTitle(anyString());
 		verify(game).getRenderer();
 		verify(builder).initialise(eq(renderer));
@@ -48,9 +53,9 @@ public class EuclidStandTest {
 		verify(game).getHeight();
 		verify(renderPass).addSpatialToRender(node);
 		verify(game).addRenderPass(renderPass);
-		verify(scene).create(builder, node, renderPass, cam, width, height);
-		verifyNoMoreInteractions(game, builder, nodeFactory, scene, renderPass);
-		verifyZeroInteractions(renderer, node, cam);
+		verify(sceneFactory).make(builder, node, renderPass, cam, width, height);
+		verifyNoMoreInteractions(game, builder, nodeFactory, sceneFactory, renderPass);
+		verifyZeroInteractions(renderer, node, cam, scene);
 	}
 
 	/**
@@ -61,16 +66,18 @@ public class EuclidStandTest {
 		float interpolation = 10f;
 		Builder builder = mock(Builder.class);
 		JMENode.Factory nodeFactory = mock(JMENode.Factory.class);
+		GameScene.Factory sceneFactory = mock(GameScene.Factory.class);
 		GameScene scene = mock(GameScene.class);
 		JMESimpleGame game = mock(JMESimpleGame.class);
 		JMEShadowedRenderPass renderPass = mock(JMEShadowedRenderPass.class);
 
-		EuclidStand instance = new EuclidStand(builder, nodeFactory, renderPass, scene, game);
+		EuclidStand instance = new EuclidStand(builder, nodeFactory, sceneFactory, renderPass, game);
+		instance.scene = scene;
 		instance.update(interpolation);
 
 		verify(scene).update(interpolation);
 		verifyNoMoreInteractions(scene);
-		verifyZeroInteractions(builder, nodeFactory, game, renderPass);
+		verifyZeroInteractions(builder, nodeFactory, game, renderPass, sceneFactory);
 	}
 
 	/**
@@ -80,15 +87,15 @@ public class EuclidStandTest {
 	public void testStart() {
 		Builder builder = mock(Builder.class);
 		JMENode.Factory nodeFactory = mock(JMENode.Factory.class);
-		GameScene scene = mock(GameScene.class);
+		GameScene.Factory sceneFactory = mock(GameScene.Factory.class);
 		JMESimpleGame game = mock(JMESimpleGame.class);
 		JMEShadowedRenderPass renderPass = mock(JMEShadowedRenderPass.class);
 
-		EuclidStand instance = new EuclidStand(builder, nodeFactory, renderPass, scene, game);
+		EuclidStand instance = new EuclidStand(builder, nodeFactory, sceneFactory, renderPass, game);
 		instance.run();
 
 		verify(game).run();
 		verifyNoMoreInteractions(game);
-		verifyZeroInteractions(builder, nodeFactory, scene, renderPass);
+		verifyZeroInteractions(builder, nodeFactory, sceneFactory, renderPass);
 	}
 }
