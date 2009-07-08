@@ -6,6 +6,7 @@ import com.jme.renderer.Camera;
 import euclidstand.engine.JMEChaseCamera;
 import euclidstand.engine.JMENode;
 import euclidstand.engine.JMEShadowedRenderPass;
+import euclidstand.engine.JMESpatial;
 import euclidstand.engine.JMETerrain;
 import java.util.List;
 import java.util.logging.Logger;
@@ -24,15 +25,17 @@ public class GameScene {
 	private final List<Entity> entitiesToRemove;
 	private final JMENode sceneNode;
 	private final JMETerrain terrain;
+	private final JMESpatial sky;
 	private final JMEChaseCamera chasecam;
 	private final GameSceneUI ui;
 
-	public GameScene(List<Entity> entities, List<Entity> entitiesToAdd, List<EntityObserver> observers, List<Entity> entitiesToRemove, JMENode sceneNode, JMETerrain terrain, JMEChaseCamera chasecam, GameSceneUI ui) {
+	public GameScene(List<Entity> entities, List<Entity> entitiesToAdd, List<EntityObserver> observers, List<Entity> entitiesToRemove, JMENode sceneNode, JMETerrain terrain, JMESpatial sky, JMEChaseCamera chasecam, GameSceneUI ui) {
 		this.entities = entities;
 		this.entitiesToAdd = entitiesToAdd;
 		this.observers = observers;
 		this.entitiesToRemove = entitiesToRemove;
 		this.sceneNode = sceneNode;
+		this.sky = sky;
 		this.terrain = terrain;
 		this.chasecam = chasecam;
 		this.ui = ui;
@@ -76,7 +79,7 @@ public class GameScene {
 		logger.fine("Updating locations");
 		chasecam.updateTerrain(terrain);
 
-		sceneNode.getChild("Sky").setLocalTranslation(chasecam.getLocation());
+		sky.setLocalTranslation(chasecam.getLocation());
 
 		logger.fine("Updating GUI");
 		PlayerEntity player = getPlayerObserver().getPlayer();
@@ -127,7 +130,8 @@ public class GameScene {
 			logger.info("Building world");
 			JMETerrain terrain = builder.buildTerrain("Terrain");
 			sceneNode.attachChild(terrain);
-			sceneNode.attachChild(builder.buildSky("Sky"));
+			JMESpatial sky = builder.buildSky("Sky");
+			sceneNode.attachChild(sky);
 
 			logger.info("Building entities");
 
@@ -153,7 +157,7 @@ public class GameScene {
 			JMENode uiNode = nodeFactory.make("UI");
 			sceneNode.attachChild(uiNode);
 			GameSceneUI ui = uiFactory.make(uiNode, width, height);
-			return new GameScene(entities, entitiesToAdd, observers, entitiesToRemove, sceneNode, terrain, chasecam, ui);
+			return new GameScene(entities, entitiesToAdd, observers, entitiesToRemove, sceneNode, terrain, sky, chasecam, ui);
 		}
 	}
 }

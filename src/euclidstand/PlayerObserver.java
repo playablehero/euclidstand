@@ -14,7 +14,7 @@ import euclidstand.engine.JMESpatial;
 /**
  * Manages player objects and responds to player events
  */
-public final class PlayerObserver extends EntityObserver implements Observer {
+public class PlayerObserver extends EntityObserver implements Observer {
 
 	private static final Logger logger = Logger.getLogger(PlayerObserver.class.getName());
 	private final JMENode bulletNode;
