@@ -3,10 +3,18 @@
 	<property name="dir.src" value="src" />
 	<property name="dir.test" value="test" />
 	<property name="dir.build" value="bin" />
+	<property name="dir.temp" value="temp" />
 	<property name="dir.lib" value="lib" />
+	<property name="dir.dist" value="dist" />
+
 	<property name="lib.debug" value="${dir.lib}/debug" />
 	<property name="lib.test" value="${dir.lib}/test" />
+	<property name="lib.natives" value="${dir.lib}/natives" />
+	<property name="lib.release" value="${dir.lib}/release" />
+
 	<property name="main" value="euclidstand.EuclidStand" />
+	<property name="jarfile" value="euclidstand.jar" />
+	<property name="distfile" value="euclidstand.zip" />
 	
 	<path id="classpath">
 		<pathelement location="." />
@@ -32,6 +40,8 @@
 
 	<target name="clean">
 		<delete dir="${dir.build}" />
+		<delete dir="${dir.temp}" />
+		<delete dir="${dir.dist}" />
 	</target>
 
 	<target name="build" depends="init">
@@ -49,7 +59,7 @@
 	<target name="run" depends="build">
 		<java fork="yes" spawn="no" classname="${main}">
 			<classpath refid="classpath" />
-			<jvmarg value="-Djava.library.path=lib/natives" />
+			<jvmarg value="-Djava.library.path=${lib.natives}" />
 		</java>
 	</target>
 
@@ -65,5 +75,36 @@
 		</junit>
 	</target>
 
+	<target name="dist" depends="clean, build">
+		<mkdir dir="${dir.temp}" />
+		<copy todir="${dir.temp}/media">
+			<fileset dir="media"/>
+		</copy>
+		<copy todir="${dir.temp}/${dir.lib}">
+			<fileset dir="${dir.lib}">
+				<include name="*.jar"/>
+				<include name="*release*/*"/>
+				<include name="*launcher*/*"/>
+				<include name="*natives*/*"/>
+			</fileset>
+		</copy>
+		<copy todir="${dir.temp}">
+			<fileset file="launcher.xml"/>
+			<fileset file="commons-launcher.jar"/>
+			<fileset file="demo.sh"/>
+			<fileset file="demo.bat"/>
+			<fileset file="README"/>
+			<fileset file="launcher.properties"/>
+			<fileset file="LauncherBootstrap.class"/>
+		</copy>
+		<jar destfile="${dir.temp}/${dir.lib}/${jarfile}">
+			<fileset dir="${dir.build}"/>
+		</jar>
+		<mkdir dir="${dir.dist}" />
+		<zip destfile="${dir.dist}/${distfile}" >
+			<zipfileset dir="${dir.temp}" prefix="euclidstand" />
+		</zip>
+		<!--delete dir="${dir.temp}" /-->
+	</target>
 </project>
 

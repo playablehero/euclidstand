@@ -40,7 +40,7 @@ import jmetest.TestChooser;
 public class Builder {
 
 	private static final Logger logger = Logger.getLogger(Builder.class.getName());
-	private static final String mediaDir = "media wip/";
+	private static final String mediaDir = "media/";
 	private static final String shaderDir = "shaders/";
 	// Terrain parameters
 	private static final int mapsize = 32;
@@ -129,33 +129,27 @@ public class Builder {
 		logger.fine("Building sky");
 		Skybox skybox = new Skybox(name, 500, 500, 500);
 		Texture north = TextureManager.loadTexture(
-				TestChooser.class.getClassLoader().getResource(
-				"jmetest/data/texture/north.jpg"),
+				mediaDir + "north.jpg",
 				Texture.MinificationFilter.BilinearNearestMipMap,
 				Texture.MagnificationFilter.Bilinear);
 		Texture south = TextureManager.loadTexture(
-				TestChooser.class.getClassLoader().getResource(
-				"jmetest/data/texture/south.jpg"),
+				mediaDir + "south.jpg",
 				Texture.MinificationFilter.BilinearNearestMipMap,
 				Texture.MagnificationFilter.Bilinear);
 		Texture east = TextureManager.loadTexture(
-				TestChooser.class.getClassLoader().getResource(
-				"jmetest/data/texture/east.jpg"),
+				mediaDir + "east.jpg",
 				Texture.MinificationFilter.BilinearNearestMipMap,
 				Texture.MagnificationFilter.Bilinear);
 		Texture west = TextureManager.loadTexture(
-				TestChooser.class.getClassLoader().getResource(
-				"jmetest/data/texture/west.jpg"),
+				mediaDir + "west.jpg",
 				Texture.MinificationFilter.BilinearNearestMipMap,
 				Texture.MagnificationFilter.Bilinear);
 		Texture up = TextureManager.loadTexture(
-				TestChooser.class.getClassLoader().getResource(
-				"jmetest/data/texture/top.jpg"),
+				mediaDir + "top.jpg",
 				Texture.MinificationFilter.BilinearNearestMipMap,
 				Texture.MagnificationFilter.Bilinear);
 		Texture down = TextureManager.loadTexture(
-				TestChooser.class.getClassLoader().getResource(
-				"jmetest/data/texture/bottom.jpg"),
+				mediaDir + "bottom.jpg",
 				Texture.MinificationFilter.BilinearNearestMipMap,
 				Texture.MagnificationFilter.Bilinear);
 
